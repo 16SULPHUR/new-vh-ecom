@@ -40,7 +40,7 @@ export function Header() {
                     <SheetContent side="left" className='bg-black text-white'>
                     <SheetHeader>
                         <Link to="/" className="mr-6 flex items-center space-x-2">
-                            <img src="/logos/wht.svg" alt="LOGO" className='h-40' />
+                            <img src="/log  os/wht.svg" alt="LOGO" className='h-40' />
                         </Link>
                     </SheetHeader>
                         <nav className="flex flex-col gap-4">
@@ -85,10 +85,6 @@ export function Header() {
 
                     <Button variant="ghost" size="icon" className="hidden sm:flex">
                         <MapPin className="h-5 w-5" />
-                    </Button>
-
-                    <Button variant="ghost" size="icon">
-                        <Heart className="h-5 w-5" />
                     </Button>
 
                     <Button variant="ghost" size="icon" className='relative'>

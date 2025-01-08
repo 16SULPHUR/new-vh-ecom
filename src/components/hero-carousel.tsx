@@ -205,7 +205,7 @@ export function HeroCarousel() {
                                 alt={item.title}
                                 className="block md:hidden object-cover w-screen h-full"
                             />
-                            <div className="absolute inset-0 bg-black/20" />
+                            {/* <div className="absolute inset-0 bg-black/20" />
                             <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4">
                                 <h1 className="text-4xl md:text-6xl font-bold mb-4">{item.title}</h1>
                                 <p className="text-xl md:text-2xl mb-8">{item.subtitle}</p>
@@ -215,7 +215,7 @@ export function HeroCarousel() {
                                 >
                                     <a href={item.ctaLink}>{item.ctaText}</a>
                                 </Button>
-                            </div>
+                            </div> */}
                         </div>
                     </CarouselItem>
                 ))}

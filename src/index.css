@@ -20,13 +20,13 @@ body::-webkit-scrollbar {
  
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 39 40% 94%; /* Light beige background */
     --foreground: 222.2 84% 4.9%;
 
-    --card: 0 0% 100%;
+    --card: 39 40% 94%; /* Light beige card */
     --card-foreground: 222.2 84% 4.9%;
  
-    --popover: 0 0% 100%;
+    --popover: 39 40% 94%; /* Light beige popover */
     --popover-foreground: 222.2 84% 4.9%;
  
     --primary: 222.2 47.4% 11.2%;
@@ -49,7 +49,9 @@ body::-webkit-scrollbar {
     --ring: 222.2 84% 4.9%;
  
     --radius: 0.5rem;
-  }
+}
+
+
  
   .dark {
     --background: 222.2 84% 4.9%;
