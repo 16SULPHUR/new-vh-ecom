@@ -3,8 +3,9 @@ import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
 import tailwindcss from "tailwindcss";
 
+const basenameProd = '/'
 export default defineConfig(({ command }) => {
-
+  const isProd = command === 'build'
   return {
     plugins: [react()],
     resolve: {
@@ -24,5 +25,6 @@ export default defineConfig(({ command }) => {
     server: {
       host: "0.0.0.0",
     },
+    base: isProd ? basenameProd : '',
   }
 })
