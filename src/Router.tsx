@@ -6,6 +6,7 @@ import NoMatch from "./pages/NoMatch";
 import Dashboard from "./pages/Dashboard";
 import Empty from "./pages/Empty";
 import Sample from "./pages/Sample";
+import Product from "./pages/Product";
 
 export const router = createBrowserRouter([
     {
@@ -17,12 +18,12 @@ export const router = createBrowserRouter([
                 element: <Dashboard />,
             },
             {
-                path: "sample",
-                element: <Sample />,
+                path: "/category/:category",
+                element: <Dashboard />,
             },
             {
-                path: "empty",
-                element: <Empty />,
+                path: "/product/:id",
+                element: <Product />,
             },
         ],
     },

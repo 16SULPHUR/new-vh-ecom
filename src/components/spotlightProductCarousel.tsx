@@ -8,8 +8,8 @@ import { EmblaCarouselType } from 'embla-carousel'
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import ProductCard from '@/components/productCard';
-import { getSpotlightProducts } from '@/lib/fetchProducts';
 import { Product } from '@/lib/types/product';
+import { getProductsFromCollection } from '@/lib/fetchProducts';
 
 export function ProductCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel({
@@ -53,7 +53,7 @@ export function ProductCarousel() {
   React.useEffect(() => {
     async function fetchProducts() {
       try {
-        const data: Product[] = await getSpotlightProducts();
+        const data: Product[] = await getProductsFromCollection("Spotlight");
         setProducts(data);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -109,4 +109,9 @@ export function ProductCarousel() {
     </div>
   );
 }
+
+
+
+
+
 

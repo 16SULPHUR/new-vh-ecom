@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Menu, Search, MapPin, Heart, ShoppingBag } from 'lucide-react'
 import { Button } from '../ui/button'
@@ -16,18 +16,32 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from '../ui/navigation-menu'
+import { getCategories } from '@/lib/fetchCategories'
+import { toTitleCase } from '@/lib/fetchProducts'
 
 const menuItems = [
-    { title: 'New In', href: '/new-in' },
-    { title: 'Sets', href: '/sets' },
-    { title: 'Sarees', href: '/sarees' },
-    { title: 'Blouses', href: '/blouses' },
-    { title: 'Dupattas & More', href: '/dupattas' },
-    { title: 'Collections', href: '/collections' },
     { title: 'Online Exclusive', href: '/exclusive' },
 ]
 
 export function Header() {
+    const [categories, setCategories] = useState<string[]>([]);
+
+    useEffect(() => {
+        async function fetchCategories() {
+            const categoryNames = await getCategories();
+            setCategories(categoryNames);
+        }
+        fetchCategories();
+    }, []);
+
+    const allMenuItems = [
+        ...menuItems,
+        ...categories.map(category => ({
+            title: category,
+            href: `/category/${category}`
+        }))
+    ];
+
     return (
         <header className="static top-0 z-50 w-screen border-b bg-black text-white">
             <div className="container flex h-16 items-center">
@@ -38,13 +52,13 @@ export function Header() {
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="left" className='bg-black text-white'>
-                    <SheetHeader>
-                        <Link to="/" className="mr-6 flex items-center space-x-2">
-                            <img src="/log  os/wht.svg" alt="LOGO" className='h-40' />
-                        </Link>
-                    </SheetHeader>
+                        <SheetHeader>
+                            <Link to="/" className="mr-6 flex items-center space-x-2">
+                                <img src="/logos/wht.svg" alt="LOGO" className='h-40' />
+                            </Link>
+                        </SheetHeader>
                         <nav className="flex flex-col gap-4">
-                            {menuItems.map((item) => (
+                            {allMenuItems.map((item) => (
                                 <Link
                                     key={item.href}
                                     to={item.href}
@@ -64,13 +78,13 @@ export function Header() {
                 <div className="hidden md:flex md:flex-1">
                     <NavigationMenu>
                         <NavigationMenuList>
-                            {menuItems.map((item) => (
+                            {allMenuItems.map((item) => (
                                 <NavigationMenuItem key={item.href}>
                                     <Link
                                         to={item.href}
                                         className="group inline-flex h-10 w-max items-center justify-center px-4 py-2 text-sm font-medium"
                                     >
-                                        {item.title}
+                                        {toTitleCase(item.title)}
                                     </Link>
                                 </NavigationMenuItem>
                             ))}
@@ -97,4 +111,3 @@ export function Header() {
         </header>
     )
 }
-

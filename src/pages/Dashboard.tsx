@@ -4,7 +4,6 @@ import ProductCard from "@/components/productCard";
 import { ProductCarousel } from "@/components/spotlightProductCarousel";
 import { SaleBanner } from "@/components/sale-banner";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { getSpotlightProducts } from "@/lib/fetchProducts";
 
 export default function Dashboard() {
     
