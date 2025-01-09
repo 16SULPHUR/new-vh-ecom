@@ -7,6 +7,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from '@/lib/supabase';
+import ZoomableImage from './zoomable-image';
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
 
 type VariantImage = {
     url: string;
@@ -39,6 +42,7 @@ type Product = {
 
 export default function ProductPage() {
     const [product, setProduct] = useState<Product | null>(null);
+    const [mainImage, setMainImage] = useState<string | null | undefined>(product?.primary_image_url || "");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedColor, setSelectedColor] = useState<string>('');
@@ -60,12 +64,11 @@ export default function ProductPage() {
                 setLoading(true);
                 const { data, error } = await supabase.rpc('get_product_details', { input_product_id: Number(id) }).single();
 
-                    console.log(data)
-
                 if (error) throw error;
 
                 if (data && isValidProduct(data)) {
                     setProduct(data);
+                    setMainImage(data.primary_image_url);
                     if (data.color_variants.length > 0) {
                         setSelectedColor(data.color_variants[0].color);
                     }
@@ -81,6 +84,10 @@ export default function ProductPage() {
 
         fetchProduct();
     }, [id]);
+
+    const handleThumbnailClick = (imageUrl: string) => {
+        setMainImage(imageUrl);  // Only update the main image
+    };
 
     function isValidProduct(data: any): data is Product {
         return (
@@ -99,6 +106,7 @@ export default function ProductPage() {
         );
     }
 
+
     const toggleAccordion = (id: string) => {
         setExpandedAccordions(prev =>
             prev.includes(id)
@@ -113,6 +121,14 @@ export default function ProductPage() {
             variant => variant.color.toLowerCase() === selectedColor.toLowerCase()
         );
         return variantImages?.images || [];
+    };
+
+    const getPrimaryImageForColor = (color: string) => {
+        if (!product) return null;
+        const variantImages = product.variant_images.find(
+            variant => variant.color.toLowerCase() === color.toLowerCase()
+        );
+        return variantImages?.images.find(img => img.is_primary)?.url || variantImages?.images[0]?.url;
     };
 
     if (loading) {
@@ -138,12 +154,19 @@ export default function ProductPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Left column - Image gallery */}
                 <div className="space-y-4">
-                    <Card className="overflow-hidden md:ml-24">
-                        <img
-                            src={filteredImages[0]?.url || product.primary_image_url}
+                    <Card className="overflow-scroll md:ml-24 flex">
+                        {/* <img
+                            src={mainImage || product.primary_image_url}
                             alt={product.name}
                             className="w-full aspect-square object-cover"
-                        />
+                        /> */}
+                        <PhotoProvider>
+                                {filteredImages.map((image, index) => (
+                                    <PhotoView src={image.url}>
+                                        <img src={image.url} alt="" />
+                                    </PhotoView>
+                                ))}
+                        </PhotoProvider>
                     </Card>
 
                     <div className="relative md:absolute md:left-0 md:top-0 md:bottom-0 md:w-20">
@@ -152,6 +175,7 @@ export default function ProductPage() {
                                 <button
                                     key={`image-${index}`}
                                     className="flex-shrink-0 w-20 h-20 border rounded-md overflow-hidden hover:border-primary transition-colors"
+                                    onClick={() => handleThumbnailClick(image.url)}
                                 >
                                     <img
                                         src={image.url}
@@ -162,6 +186,7 @@ export default function ProductPage() {
                             ))}
                         </div>
                     </div>
+
                 </div>
 
                 {/* Right column - Product details */}
@@ -192,7 +217,7 @@ export default function ProductPage() {
                                 <RadioGroup
                                     value={selectedColor}
                                     onValueChange={setSelectedColor}
-                                    className="flex gap-4"
+                                    className="flex flex-wrap gap-4"
                                 >
                                     {product.color_variants.map((variant) => (
                                         <div key={variant.color} className="flex flex-col items-center gap-2">
@@ -205,10 +230,14 @@ export default function ProductPage() {
                                                 htmlFor={variant.color}
                                                 className="cursor-pointer"
                                             >
-                                                <div
-                                                    className="w-8 h-8 rounded-full border-2 peer-checked:border-primary transition-colors"
-                                                    style={{ backgroundColor: variant.hex_code }}
-                                                />
+                                                <div className="w-16 h-16 rounded-md overflow-hidden border-2 peer-checked:border-primary transition-colors">
+                                                    <img
+                                                        src={getPrimaryImageForColor(variant.color) || product.primary_image_url}
+                                                        alt={variant.color}
+                                                        className="w-full h-full object-cover"
+                                                        onClick={() => setMainImage(getPrimaryImageForColor(variant.color))}
+                                                    />
+                                                </div>
                                             </Label>
                                             <span className="text-sm">{variant.color}</span>
                                         </div>
