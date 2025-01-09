@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Star, Plus, Minus, ChevronDown, ChevronUp } from 'lucide-react';
+import { Star, Plus, Minus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabase';
 import ZoomableImage from './zoomable-image';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
+import { CaretLeftIcon } from '@radix-ui/react-icons';
 
 type VariantImage = {
     url: string;
@@ -50,13 +51,86 @@ export default function ProductPage() {
     const [quantity, setQuantity] = useState(1);
     const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
     const [expandedAccordions, setExpandedAccordions] = useState<string[]>(['product-details']);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const { id } = useParams<{ id: string }>();
+
+    const [touchStart, setTouchStart] = useState(0);
+    const [touchEnd, setTouchEnd] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
+    const [startX, setStartX] = useState(0);
 
     const addOns = [
         { id: 'petticoat', name: 'Petticoat', price: 799.00 },
         { id: 'pre-drape', name: 'Pre Drape This Saree', price: 899.00 },
         { id: 'fall-pico', name: 'Fall & Pico (Its a Free Gift For Our Beloved Customers)', price: 0.00 },
     ];
+
+    useEffect(() => {
+        setCurrentImageIndex(0);
+    }, [selectedColor]);
+
+
+    const handleTouchStart = (e: any) => {
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchMove = (e: any) => {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+
+    const handleTouchEnd = () => {
+        if (!touchStart || !touchEnd) return;
+
+        const distance = touchStart - touchEnd;
+        const minSwipeDistance = 50;
+
+        if (Math.abs(distance) < minSwipeDistance) return;
+
+        if (distance > 0) {
+            // Swiped left
+            setCurrentImageIndex((prev) => (prev + 1) % filteredImages.length);
+        }
+
+        if (distance < 0) {
+            // Swiped right
+            setCurrentImageIndex((prev) => (prev - 1 + filteredImages.length) % filteredImages.length);
+        }
+
+        // Reset values
+        setTouchStart(0);
+        setTouchEnd(0);
+    };
+
+    const handleMouseDown = (e: any) => {
+        setIsDragging(true);
+        setStartX(e.clientX);
+    };
+
+    const handleMouseMove = (e: any) => {
+        if (!isDragging) return;
+        setTouchEnd(e.clientX);
+    };
+
+    const handleMouseUp = () => {
+        if (!isDragging) return;
+
+        const distance = startX - touchEnd;
+        const minSwipeDistance = 50;
+
+        if (Math.abs(distance) > minSwipeDistance) {
+            if (distance > 0) {
+                // Dragged left
+                setCurrentImageIndex((prev) => (prev + 1) % filteredImages.length);
+            } else {
+                // Dragged right
+                setCurrentImageIndex((prev) => (prev - 1 + filteredImages.length) % filteredImages.length);
+            }
+        }
+
+        setIsDragging(false);
+        setStartX(0);
+        setTouchEnd(0);
+    };
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -87,6 +161,14 @@ export default function ProductPage() {
 
     const handleThumbnailClick = (imageUrl: string) => {
         setMainImage(imageUrl);  // Only update the main image
+    };
+
+    const nextImage = () => {
+        setCurrentImageIndex((prev) => (prev + 1) % filteredImages.length);
+    };
+
+    const prevImage = () => {
+        setCurrentImageIndex((prev) => (prev - 1 + filteredImages.length) % filteredImages.length);
     };
 
     function isValidProduct(data: any): data is Product {
@@ -150,26 +232,83 @@ export default function ProductPage() {
     const filteredImages = getFilteredImages();
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-1 py-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Left column - Image gallery */}
                 <div className="space-y-4">
-                    <Card className="overflow-scroll md:ml-24 flex">
-                        {/* <img
-                            src={mainImage || product.primary_image_url}
-                            alt={product.name}
-                            className="w-full aspect-square object-cover"
-                        /> */}
-                        <PhotoProvider>
+                    {/* <Card className="overflow-scroll sm:overflow-hidden md:ml-24 flex rounded-none h-[60vh] sm:h-[85vh]"> */}
+                    <Card className="overflow-hidden relative md:ml-24 flex rounded-none h-[60vh] sm:h-[85vh]">
+
+                        {/* <PhotoProvider key={selectedColor}>
+                            {filteredImages.map((image, index) => (
+                                <PhotoView src={image.url || product.primary_image_url}>
+                                    <img
+                                        src={image.url || product.primary_image_url}
+                                        alt={product.name}
+                                        className="w-full aspect-square object-cover cursor-pointer cursor-zoom-in"
+                                    />
+                                </PhotoView>
+                            ))}
+                        </PhotoProvider> */}
+                        <PhotoProvider key={selectedColor}>
+                            <div
+                                className="relative w-full h-full"
+                                onTouchStart={handleTouchStart}
+                                onTouchMove={handleTouchMove}
+                                onTouchEnd={handleTouchEnd}
+                                onMouseDown={handleMouseDown}
+                                onMouseMove={handleMouseMove}
+                                onMouseUp={handleMouseUp}
+                                onMouseLeave={handleMouseUp}
+                            >
                                 {filteredImages.map((image, index) => (
-                                    <PhotoView src={image.url}>
-                                        <img src={image.url} alt="" />
+                                    <PhotoView key={index} src={image.url}>
+                                        <div
+                                            className={`absolute inset-0 transition-opacity duration-300 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                                                }`}
+                                        >
+                                            <img
+                                                src={image.url}
+                                                alt={`${product.name} view ${index + 1}`}
+                                                className="w-full h-full object-contain cursor-zoom-in"
+                                            />
+                                        </div>
                                     </PhotoView>
                                 ))}
+                            </div>
                         </PhotoProvider>
-                    </Card>
+                        {/* <Button
+                            variant="outline"
+                            size="icon"
+                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white z-10"
+                            onClick={prevImage}
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
 
-                    <div className="relative md:absolute md:left-0 md:top-0 md:bottom-0 md:w-20">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white z-10"
+                            onClick={nextImage}
+                        >
+                            <ChevronRight className="h-4 w-4" />
+                        </Button> */}
+
+                    </Card>
+                    
+                        <div className="absolute left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                            {filteredImages.map((_, index) => (
+                                <button
+                                    key={index}
+                                    className={`w-3 h-3 border-black outline outline-1 outline-black rounded-full transition-colors ${index === currentImageIndex ? 'bg-primary' : 'bg-background'
+                                        }`}
+                                    onClick={() => setCurrentImageIndex(index)}
+                                />
+                            ))}
+                        </div>
+
+                    {/* <div className="relative md:absolute md:left-0 md:top-0 md:bottom-0 md:w-20">
                         <div className="flex md:flex-col gap-2 overflow-auto md:h-full">
                             {filteredImages.map((image, index) => (
                                 <button
@@ -185,7 +324,7 @@ export default function ProductPage() {
                                 </button>
                             ))}
                         </div>
-                    </div>
+                    </div> */}
 
                 </div>
 
