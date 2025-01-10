@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Empty from "./pages/Empty";
 import Sample from "./pages/Sample";
 import Product from "./pages/Product";
+import CartPage from "./pages/Cart";
 
 export const router = createBrowserRouter([
     {
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
             {
                 path: "",
                 element: <Dashboard />,
+            },
+            {
+                path: "cart",
+                element: <CartPage />,
             },
             {
                 path: "/category/:category",

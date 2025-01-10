@@ -18,6 +18,7 @@ import {
 } from '../ui/navigation-menu'
 import { getCategories } from '@/lib/fetchCategories'
 import { toTitleCase } from '@/lib/fetchProducts'
+import HeaderCart from '../header-cart'
 
 const menuItems = [
     { title: 'Online Exclusive', href: '/exclusive' },
@@ -101,11 +102,7 @@ export function Header() {
                         <MapPin className="h-5 w-5" />
                     </Button>
 
-                    <Button variant="ghost" size="icon" className='relative'>
-                        <ShoppingBag className="h-5 w-5" />
-                        <span className="absolute -right-1 -top-1 h-4 w-4 rounded-full bg-primary text-xs text-white">0
-                        </span>
-                    </Button>
+                    <HeaderCart/>
                 </div>
             </div>
         </header>

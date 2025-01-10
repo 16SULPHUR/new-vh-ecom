@@ -12,6 +12,7 @@ import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import { CaretLeftIcon } from '@radix-ui/react-icons';
 import { format, parseISO } from 'date-fns'
+import { addToCart } from '@/lib/bagManager';
 
 type VariantImage = {
     url: string;
@@ -26,6 +27,7 @@ type ColorVariantImages = {
 type ColorVariant = {
     color: string;
     hex_code: string;
+    varient_id: number
 };
 
 type Product = {
@@ -40,6 +42,7 @@ type Product = {
     color_variants: ColorVariant[];
     size_variants: string[];
     variant_images: ColorVariantImages[];
+    variant_id: number
 };
 
 export default function ProductPage() {
@@ -48,6 +51,7 @@ export default function ProductPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedColor, setSelectedColor] = useState<string>('');
+    const [selectedVarientId, setSelectedVarientId] = useState<number>();
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [quantity, setQuantity] = useState(1);
     const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
@@ -65,6 +69,15 @@ export default function ProductPage() {
     ];
 
     useEffect(() => {
+        setCurrentImageIndex(0);
+        if (product && selectedColor) {
+            const selectedVariant = product.color_variants.find(
+                variant => variant.color.toLowerCase() === selectedColor.toLowerCase()
+            );
+            if (selectedVariant) {
+                setSelectedVarientId(selectedVariant.varient_id);
+            }
+        }
         setCurrentImageIndex(0);
     }, [selectedColor]);
 
@@ -140,10 +153,12 @@ export default function ProductPage() {
                 if (error) throw error;
 
                 if (data && isValidProduct(data)) {
+                    console.log(data)
                     setProduct(data);
                     setMainImage(data.primary_image_url);
                     if (data.color_variants.length > 0) {
                         setSelectedColor(data.color_variants[0].color);
+                        setSelectedVarientId(data.color_variants[0].varient_id);
                     }
                 } else {
                     setError("Invalid product data");
@@ -169,6 +184,10 @@ export default function ProductPage() {
     const prevImage = () => {
         setCurrentImageIndex((prev) => (prev - 1 + filteredImages.length) % filteredImages.length);
     };
+
+    function addItemsToCart() {
+        if (selectedVarientId) { addToCart(selectedVarientId, quantity); }
+    }
 
     function isValidProduct(data: any): data is Product {
         return (
@@ -296,7 +315,7 @@ export default function ProductPage() {
 
                     </Card>
 
-                    <div className="absolute left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                    <div className="absolute sm:hidden left-1/2 -translate-x-1/2 flex gap-2 z-10">
                         {filteredImages.map((_, index) => (
                             <button
                                 key={index}
@@ -459,7 +478,7 @@ export default function ProductPage() {
 
                     {/* DESKTOP */}
                     <div className="hidden sm:flex relative w-full py-4">
-                        <Button className="w-96">ADD TO CART</Button>
+                        <Button onClick={addItemsToCart} className="w-96 bg-pink-600/70 focus:bg-pink-600 hover:bg-pink-700">ADD TO CART</Button>
                     </div>
 
                     <div className="flex-col gap-3 flex items-start">
@@ -506,7 +525,7 @@ export default function ProductPage() {
                 </div>
                 {/* MOBILE */}
                 <div className="flex fixed sm:hidden justify-center bottom-0 w-screen bg-primary-foreground py-4 rounded-t-2xl shadow-black shadow-2xl">
-                    <Button className="w-96 bg-pink-600"> <ShoppingBag size={20}/> Add To Bag</Button>
+                    <Button onClick={addItemsToCart} className="w-96 bg-pink-600/70 focus:bg-pink-600 hover:bg-pink-700"> <ShoppingBag size={20} /> Add To Bag</Button>
                 </div>
             </div>
         </div>
