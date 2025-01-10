@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Star, Plus, Minus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, Plus, Minus, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Truck, TruckIcon, LucideTruck, Clock4Icon, ShoppingBag } from 'lucide-react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -11,6 +11,7 @@ import ZoomableImage from './zoomable-image';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import { CaretLeftIcon } from '@radix-ui/react-icons';
+import { format, parseISO } from 'date-fns'
 
 type VariantImage = {
     url: string;
@@ -61,8 +62,6 @@ export default function ProductPage() {
 
     const addOns = [
         { id: 'petticoat', name: 'Petticoat', price: 799.00 },
-        { id: 'pre-drape', name: 'Pre Drape This Saree', price: 899.00 },
-        { id: 'fall-pico', name: 'Fall & Pico (Its a Free Gift For Our Beloved Customers)', price: 0.00 },
     ];
 
     useEffect(() => {
@@ -237,7 +236,7 @@ export default function ProductPage() {
                 {/* Left column - Image gallery */}
                 <div className="space-y-4">
                     {/* <Card className="overflow-scroll sm:overflow-hidden md:ml-24 flex rounded-none h-[60vh] sm:h-[85vh]"> */}
-                    <Card className="overflow-hidden relative md:ml-24 flex rounded-none h-[60vh] sm:h-[85vh]">
+                    <Card className="overflow-hidden relative md:ml-24 flex rounded-none h-[60vh] sm:h-[85vh] shadow-none">
 
                         {/* <PhotoProvider key={selectedColor}>
                             {filteredImages.map((image, index) => (
@@ -277,36 +276,36 @@ export default function ProductPage() {
                                 ))}
                             </div>
                         </PhotoProvider>
-                        {/* <Button
+                        <Button
                             variant="outline"
                             size="icon"
-                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white z-10"
+                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-white z-10 hidden sm:flex"
                             onClick={prevImage}
                         >
-                            <ChevronLeft className="h-4 w-4" />
+                            <ChevronLeft className="h-6 w-6" />
                         </Button>
 
                         <Button
                             variant="outline"
                             size="icon"
-                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white z-10"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-white z-10 hidden sm:flex"
                             onClick={nextImage}
                         >
-                            <ChevronRight className="h-4 w-4" />
-                        </Button> */}
+                            <ChevronRight className="h-6 w-6" />
+                        </Button>
 
                     </Card>
-                    
-                        <div className="absolute left-1/2 -translate-x-1/2 flex gap-2 z-10">
-                            {filteredImages.map((_, index) => (
-                                <button
-                                    key={index}
-                                    className={`w-3 h-3 border-black outline outline-1 outline-black rounded-full transition-colors ${index === currentImageIndex ? 'bg-primary' : 'bg-background'
-                                        }`}
-                                    onClick={() => setCurrentImageIndex(index)}
-                                />
-                            ))}
-                        </div>
+
+                    <div className="absolute left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                        {filteredImages.map((_, index) => (
+                            <button
+                                key={index}
+                                className={`w-3 h-3 border-black outline outline-1 outline-black rounded-full transition-colors ${index === currentImageIndex ? 'bg-primary' : 'bg-background'
+                                    }`}
+                                onClick={() => setCurrentImageIndex(index)}
+                            />
+                        ))}
+                    </div>
 
                     {/* <div className="relative md:absolute md:left-0 md:top-0 md:bottom-0 md:w-20">
                         <div className="flex md:flex-col gap-2 overflow-auto md:h-full">
@@ -329,23 +328,17 @@ export default function ProductPage() {
                 </div>
 
                 {/* Right column - Product details */}
-                <div className="space-y-6">
+                <div className="space-y-6 ms-2">
                     <div>
-                        <h1 className="text-3xl font-semibold mb-2">{product.name}</h1>
+                        <h1 className="text-lg font-serif mb-2">{product.name}</h1>
                         <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                        {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                        ))}
-                        <span className="text-sm text-muted-foreground">
-                            Rating 5/5 based on 14 reviews
-                        </span>
-                    </div>
-
                     <div>
-                        <p className="text-2xl font-semibold">₹{parseFloat(product.price).toFixed(2)}</p>
+                        <p className="text-2xl font-medium"><span className='text-base font-normal'>M.R.P.: </span>
+                            {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(parseFloat(product.price))}
+
+                        </p>
                         <p className="text-sm text-muted-foreground">(Inclusive of all taxes)</p>
                     </div>
 
@@ -415,21 +408,18 @@ export default function ProductPage() {
 
                         <div>
                             <h3 className="font-medium mb-2">Quantity:</h3>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 outline outline-1 w-32 justify-between">
                                 <Button
+                                    className='outline-none shadow-none border-none'
                                     variant="outline"
                                     size="icon"
                                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                 >
                                     <Minus className="h-4 w-4" />
                                 </Button>
-                                <input
-                                    type="number"
-                                    value={quantity}
-                                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                                    className="w-16 text-center border rounded-md p-2"
-                                />
+                                {quantity}
                                 <Button
+                                    className='outline-none shadow-none border-none'
                                     variant="outline"
                                     size="icon"
                                     onClick={() => setQuantity(quantity + 1)}
@@ -465,14 +455,19 @@ export default function ProductPage() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-4">
-                        <Button className="w-full">ADD TO CART</Button>
-                        <Button variant="outline" className="w-full">BUY NOW</Button>
+
+
+                    {/* DESKTOP */}
+                    <div className="hidden sm:flex relative w-full py-4">
+                        <Button className="w-96">ADD TO CART</Button>
                     </div>
 
-                    <div className="bg-blue-50 p-4 rounded-lg flex items-center gap-2">
-                        <div className="text-blue-600">
-                            Ships in 2 business days.
+                    <div className="flex-col gap-3 flex items-start">
+                        <div className="bg-blue-50 w-full px-4 py-2 rounded-lg text-blue-600 flex gap-3">
+                            <Clock4Icon /> <span>Ships in 2 business days.</span>
+                        </div>
+                        <div className="bg-green-50 w-full px-4 py-2 rounded-lg text-green-600 flex gap-3">
+                            <img src="/free-shipping.svg" width={30} alt="" /> <span>Free Delivery on all order within India.</span>
                         </div>
                     </div>
 
@@ -508,6 +503,10 @@ export default function ProductPage() {
                             )}
                         </div>
                     </div>
+                </div>
+                {/* MOBILE */}
+                <div className="flex fixed sm:hidden justify-center bottom-0 w-screen bg-primary-foreground py-4 rounded-t-2xl shadow-black shadow-2xl">
+                    <Button className="w-96 bg-pink-600"> <ShoppingBag size={20}/> Add To Bag</Button>
                 </div>
             </div>
         </div>
