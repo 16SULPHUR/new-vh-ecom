@@ -105,7 +105,7 @@ export default function Categories() {
                                 <Checkbox
                                     id="in-stock"
                                     checked={inStock}
-                                    onCheckedChange={setInStock}
+                                    // onCheckedChange={setInStock}
                                 />
                                 <label htmlFor="in-stock">Display In-stock Product</label>
                             </div>
@@ -119,7 +119,7 @@ export default function Categories() {
                                 <Checkbox
                                     id="ready-to-ship"
                                     checked={readyToShip}
-                                    onCheckedChange={setReadyToShip}
+                                    // onCheckedChange={setReadyToShip}
                                 />
                                 <label htmlFor="ready-to-ship">Ready to Ship</label>
                             </div>
