@@ -11,8 +11,9 @@ import ZoomableImage from './zoomable-image';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import { CaretLeftIcon } from '@radix-ui/react-icons';
-import { format, parseISO } from 'date-fns'
+import { format, min, parseISO } from 'date-fns'
 import { addToCart } from '@/lib/bagManager';
+import { useToast } from '@/hooks/use-toast';
 
 type VariantImage = {
     url: string;
@@ -28,6 +29,7 @@ type ColorVariant = {
     color: string;
     hex_code: string;
     varient_id: number
+    varient_stock:number
 };
 
 type Product = {
@@ -51,6 +53,7 @@ export default function ProductPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedColor, setSelectedColor] = useState<string>('');
+    const [maxQuantity, setMaxQuantity] = useState<number>(1);
     const [selectedVarientId, setSelectedVarientId] = useState<number>();
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [quantity, setQuantity] = useState(1);
@@ -64,6 +67,8 @@ export default function ProductPage() {
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
 
+    const { toast } = useToast();
+
     const addOns = [
         { id: 'petticoat', name: 'Petticoat', price: 799.00 },
     ];
@@ -76,6 +81,8 @@ export default function ProductPage() {
             );
             if (selectedVariant) {
                 setSelectedVarientId(selectedVariant.varient_id);
+                setMaxQuantity(selectedVariant.varient_stock)
+                setQuantity(1)
             }
         }
         setCurrentImageIndex(0);
@@ -159,6 +166,7 @@ export default function ProductPage() {
                     if (data.color_variants.length > 0) {
                         setSelectedColor(data.color_variants[0].color);
                         setSelectedVarientId(data.color_variants[0].varient_id);
+                        setMaxQuantity(data.color_variants[0].varient_stock)
                     }
                 } else {
                     setError("Invalid product data");
@@ -185,8 +193,17 @@ export default function ProductPage() {
         setCurrentImageIndex((prev) => (prev - 1 + filteredImages.length) % filteredImages.length);
     };
 
-    function addItemsToCart() {
-        if (selectedVarientId) { addToCart(selectedVarientId, quantity); }
+    async function addItemsToCart() {
+        if (selectedVarientId) {
+            const cartDetails = await addToCart(selectedVarientId, quantity);
+            if (cartDetails.success) {
+                console.log(cartDetails)
+                toast({
+                    title: "Product added to cart",
+                    description: "Your Order is Eligible For Free Shipping",
+                });
+            }
+        }
     }
 
     function isValidProduct(data: any): data is Product {
@@ -427,6 +444,7 @@ export default function ProductPage() {
 
                         <div>
                             <h3 className="font-medium mb-2">Quantity:</h3>
+
                             <div className="flex items-center gap-2 outline outline-1 w-32 justify-between">
                                 <Button
                                     className='outline-none shadow-none border-none'
@@ -441,7 +459,8 @@ export default function ProductPage() {
                                     className='outline-none shadow-none border-none'
                                     variant="outline"
                                     size="icon"
-                                    onClick={() => setQuantity(quantity + 1)}
+                                    onClick={() => setQuantity(Math.min(maxQuantity, quantity + 1))}
+                                    disabled={quantity >= maxQuantity}
                                 >
                                     <Plus className="h-4 w-4" />
                                 </Button>

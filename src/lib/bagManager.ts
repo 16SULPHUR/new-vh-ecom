@@ -22,7 +22,7 @@ export const addToCart = async (
 ): Promise<AddToCartResponse> => {
   try {
     // Use existing cart ID or generate a new one
-    const cartId = existingCartId || uuidv4();
+    const cartId = localStorage.getItem('cartId');
 
     // Call the manage_cart function
     const { data, error } = await supabase
@@ -39,11 +39,6 @@ export const addToCart = async (
 
     if (!data) {
       throw new Error('No data returned from cart operation');
-    }
-
-    // Store cart ID in local storage for future use
-    if (!existingCartId) {
-      localStorage.setItem('cartId', cartId);
     }
 
     return {

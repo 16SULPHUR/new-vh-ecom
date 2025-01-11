@@ -13,6 +13,8 @@ interface CartProduct {
     variant_size: string;
     quantity: number;
     primary_image_url: string;
+    cart_item_id: number;
+    variant_stock: number;
 }
 
 export default function Cart() {
@@ -40,6 +42,8 @@ export default function Cart() {
                     p_cart_id: cartId
                 });
 
+            console.log(data)
+
             if (error) throw error;
             setCartItems(data || []);
         } catch (err) {
@@ -64,13 +68,11 @@ export default function Cart() {
                 .eq('variant_id', variantId);
 
             if (error) throw error;
+            fetchCartItems();
 
-            // Update local state
-            fetchCartItems()
-
-            toast({
-                description: "Cart updated successfully",
-            });
+            // toast({
+            //     description: "Cart updated successfully",
+            // });
         } catch (err) {
             toast({
                 variant: "destructive",
@@ -84,27 +86,22 @@ export default function Cart() {
     const deleteItem = async (itemToDelete: CartProduct) => {
         if (!itemToDelete) return;
 
-        console.log(itemToDelete)
-
         try {
             const cartId = localStorage.getItem('cartId');
             if (!cartId) throw new Error('No cart found');
 
-            const { data,error } = await supabase
+            const { error } = await supabase
                 .from('cart_items')
                 .delete()
                 .eq('cart_id', cartId)
                 .eq('variant_id', itemToDelete.variant_id);
 
-                console.log(data)
             if (error) throw error;
+            fetchCartItems();
 
-            // Update local state
-            fetchCartItems()
-
-            toast({
-                description: "Item removed from cart",
-            });
+            // toast({
+            //     description: "Item removed from cart",
+            // });
         } catch (err) {
             toast({
                 variant: "destructive",
@@ -145,7 +142,7 @@ export default function Cart() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-4">
                     {cartItems.map((item) => (
-                        <Card key={item.variant_id} className="p-4">
+                        <Card key={item.cart_item_id} className="p-4">
                             <div className="flex gap-4">
                                 <div className="w-24 h-24 flex-shrink-0">
                                     <img
@@ -178,8 +175,8 @@ export default function Cart() {
                                                 variant="ghost"
                                                 size="icon"
                                                 className="h-8 w-8"
-                                                onClick={() => updateQuantity(item.variant_id, item.quantity + 1)}
-                                                disabled={updatingQuantity === item.variant_id}
+                                                onClick={() => updateQuantity(item.variant_id, Math.min(item.variant_stock, item.quantity + 1))}
+                                                disabled={updatingQuantity === item.variant_id || item.quantity >= item.variant_stock}
                                             >
                                                 <Plus className="h-4 w-4" />
                                             </Button>
