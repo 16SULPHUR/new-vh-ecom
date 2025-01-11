@@ -71,7 +71,7 @@ export function ProductCarousel() {
   return (
     <div className={cn('relative w-full')}>
       <div ref={emblaRef} className="overflow-hidden">
-        <div className="flex min-h-[400px]">
+        <div className="flex min-h-[400px] w-screen">
           {products.map((product) => (
             <div
               key={product.id}

@@ -8,6 +8,7 @@ import Empty from "./pages/Empty";
 import Sample from "./pages/Sample";
 import Product from "./pages/Product";
 import CartPage from "./pages/Cart";
+import { CategoriesPage } from "./pages/Categories";
 
 export const router = createBrowserRouter([
     {
@@ -24,7 +25,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/category/:category",
-                element: <Dashboard />,
+                element: <CategoriesPage />,
             },
             {
                 path: "/product/:id",
