@@ -42,8 +42,6 @@ export default function Cart() {
                     p_cart_id: cartId
                 });
 
-            console.log(data)
-
             if (error) throw error;
             setCartItems(data || []);
         } catch (err) {

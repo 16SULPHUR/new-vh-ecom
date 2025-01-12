@@ -1,3 +1,7 @@
+export interface ColorOption {
+  name: string;
+  hex_code: string;
+}
 // lib/types/product.ts
 export type Product = {
   id: number;
@@ -5,11 +9,12 @@ export type Product = {
   description: string;
   price: number;
   imageUrl: string;
-  colorOptions: string[];
+  colorOptions: ColorOption[];
   sizes: string[];
   shipping_duration: number;
   tag: string;
 };
+
 
 export interface DbProduct {
   id: number;

@@ -160,7 +160,6 @@ export default function ProductPage() {
                 if (error) throw error;
 
                 if (data && isValidProduct(data)) {
-                    console.log(data)
                     setProduct(data);
                     setMainImage(data.primary_image_url);
                     if (data.color_variants.length > 0) {
@@ -197,7 +196,6 @@ export default function ProductPage() {
         if (selectedVarientId) {
             const cartDetails = await addToCart(selectedVarientId, quantity);
             if (cartDetails.success) {
-                console.log(cartDetails)
                 toast({
                     title: "Product added to cart",
                     description: "Your Order is Eligible For Free Shipping",
@@ -315,7 +313,7 @@ export default function ProductPage() {
                         <Button
                             variant="outline"
                             size="icon"
-                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white hover:bg-white z-10 hidden sm:flex"
+                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-transparent h-full border-none shadow-none hover:bg-transparent z-10 hidden sm:flex"
                             onClick={prevImage}
                         >
                             <ChevronLeft className="h-6 w-6" />
@@ -324,7 +322,7 @@ export default function ProductPage() {
                         <Button
                             variant="outline"
                             size="icon"
-                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white hover:bg-white z-10 hidden sm:flex"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-transparent h-full border-none shadow-none hover:bg-transparent z-10 hidden sm:flex"
                             onClick={nextImage}
                         >
                             <ChevronRight className="h-6 w-6" />

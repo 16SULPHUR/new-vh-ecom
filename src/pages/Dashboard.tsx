@@ -11,7 +11,7 @@ export default function Dashboard() {
         <div>
             <HeroCarousel />
 
-            <div className="container py-8 px-0.5">
+            <div className="container py-8 px-0.5 w-screen">
                 <h3 className="text-xl sm:text-2xl text-center tracking-tight mb-6 font-serif">
                     Spotlight Selections
                 </h3>

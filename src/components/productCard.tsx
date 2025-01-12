@@ -4,13 +4,18 @@ import { Badge } from "@/components/ui/badge"
 import { toTitleCase } from '@/lib/fetchProducts'
 import { Link } from 'react-router-dom'
 
+interface ColorOption {
+  name: string;
+  hex_code: string;
+}
+
 interface ProductCardProps {
   title: string
-  id:number
+  id: number
   price: number
   imageUrl: string
   shipsNow?: boolean
-  colorOptions: string[]
+  colorOptions: ColorOption[]  // Changed from string[] to ColorOption[]
   sizes?: string[]
   shipping_duration?: number
   tag: string
@@ -35,7 +40,7 @@ export default function ProductCard({
         <div className="relative">
           {tag && (
             <Badge
-              className="absolute left-0.5 top-0.5 z-10 bg-pink-600/60 text-white hover:bg-black/90 text-[10px] sm:text-sm rounded-sm font-normal font-sans"
+              className="absolute left-0.5 top-0.5 z-10 bg-pink-600/80 text-white hover:bg-black/90 text-[10px] sm:text-sm rounded-sm font-normal font-sans"
             >
               {toTitleCase(tag)}
             </Badge>
@@ -44,6 +49,7 @@ export default function ProductCard({
             src={imageUrl}
             alt={title}
             className="h-[25vh] sm:h-[45vh] w-full object-cover"
+            loading='lazy'
           />
         </div>
 
@@ -58,11 +64,11 @@ export default function ProductCard({
                 <div
                   key={index}
                   className="relative group cursor-pointer"
-                  title={color}
+                  title={color.name}
                 >
                   <div
-                    className="w-4 h-4 sm:w-6 sm:h-6 rounded-full border border-gray-200"
-                    style={{ backgroundColor: color }}
+                    className={`w-4 h-4 sm:w-4 sm:h-4 rounded-full border border-gray-200 outline outline-[1px] outline-offset-1`}
+                    style={{ backgroundColor: color.hex_code, outlineColor:color.hex_code }}
                   />
                   <div className="absolute inset-0 rounded-full border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
@@ -91,7 +97,13 @@ export default function ProductCard({
 
         <CardFooter className="flex items-center gap-1 sm:gap-2 border-t p-2 sm:p-4">
           <Truck className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
-          <span className="text-xs sm:text-sm">Ships in {shipping_duration} Days</span>
+          <span className="text-xs sm:text-sm">
+            {
+              shipping_duration && (
+                `Ships ${shipping_duration > 1 ? (`in ${shipping_duration} Days`) : (`Now`)}`
+              )
+            }
+          </span>
         </CardFooter>
       </Card>
     </Link>

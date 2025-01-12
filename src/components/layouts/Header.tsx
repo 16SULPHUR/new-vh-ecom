@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Menu, Search, MapPin, Heart, ShoppingBag } from 'lucide-react'
+import { Menu, Search, MapPin, Heart, ShoppingBag, MoveRight, ArrowRight } from 'lucide-react'
 import { Button } from '../ui/button'
 import {
     Sheet,
@@ -26,6 +26,11 @@ const menuItems = [
 
 export function Header() {
     const [categories, setCategories] = useState<string[]>([]);
+    const [isOpen, setIsOpen] = useState(false);
+
+  const handleMenuItemClick = () => {
+    setIsOpen(false); // Close the sheet
+  };
 
     useEffect(() => {
         async function fetchCategories() {
@@ -36,7 +41,7 @@ export function Header() {
     }, []);
 
     const allMenuItems = [
-        ...menuItems,
+        // ...menuItems,
         ...categories.map(category => ({
             title: category,
             href: `/category/${category}`
@@ -46,16 +51,16 @@ export function Header() {
     return (
         <header className="static top-0 z-50 w-screen border-b bg-black text-white">
             <div className="container flex h-16 items-center">
-                <Sheet>
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
                     <SheetTrigger asChild>
                         <Button variant="ghost" size="icon" className="md:hidden">
                             <Menu className="h-6 w-6" />
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="left" className='bg-black text-white'>
+                    <SheetContent side="left" className='text-primary bg-inherit'>
                         <SheetHeader>
                             <Link to="/" className="mr-6 flex items-center space-x-2">
-                                <img src="/logos/wht.svg" alt="LOGO" className='h-40' />
+                                <img src="/logos/blk.svg" alt="LOGO" className='h-40' />
                             </Link>
                         </SheetHeader>
                         <nav className="flex flex-col gap-4">
@@ -63,9 +68,11 @@ export function Header() {
                                 <Link
                                     key={item.href}
                                     to={item.href}
-                                    className="text-lg font-medium transition-colors hover:text-primary"
+                                    className="text-lg font-medium transition-colors hover:text-primary flex w-full justify-between items-center"
+                                    onClick={handleMenuItemClick}
                                 >
                                     {item.title}
+                                    <ArrowRight size={20}/>
                                 </Link>
                             ))}
                         </nav>

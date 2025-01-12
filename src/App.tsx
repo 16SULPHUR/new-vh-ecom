@@ -11,9 +11,8 @@ function createBagId() {
     if (!existingBagId) {
         const newBagId = uuidv4(); // Generate unique id
         localStorage.setItem("cartId", newBagId);
-        console.log(`New cartId created: ${newBagId}`);
     } else {
-        console.log(`Existing cartId: ${existingBagId}`);
+        console.log(``);
     }
 }
 

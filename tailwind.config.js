@@ -73,6 +73,7 @@ module.exports = {
       },
       fontFamily: {
         blackChancery: ['"Black Chancery"', 'cursive'], // Add the font
+        sourceSans: ['"Source Sans 3"', 'sans-serif']
       },
     },
   },

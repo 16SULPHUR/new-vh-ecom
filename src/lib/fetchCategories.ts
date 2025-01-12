@@ -5,8 +5,6 @@ export async function getCategories(): Promise<string[]> {
     .rpc('get_all_category_names')
     .select();
 
-    console.log(categories)
-
   if (error) {
     console.error("Error fetching categories:", error);
     return [];
