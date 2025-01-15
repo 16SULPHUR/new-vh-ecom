@@ -9,6 +9,9 @@ import Sample from "./pages/Sample";
 import Product from "./pages/Product";
 import CartPage from "./pages/Cart";
 import { CategoriesPage } from "./pages/Categories";
+import Policies from "./pages/PoliciesPage";
+import ContactUs from "./components/ContactUs";
+import Faq from "./components/faq";
 
 export const router = createBrowserRouter([
     {
@@ -22,6 +25,18 @@ export const router = createBrowserRouter([
             {
                 path: "cart",
                 element: <CartPage />,
+            },
+            {
+                path: "faqs",
+                element: <Faq />,
+            },
+            {
+                path: "policies",
+                element: <Policies />,
+            },
+            {
+                path: "contact",
+                element: <ContactUs />,
             },
             {
                 path: "/category/:category",

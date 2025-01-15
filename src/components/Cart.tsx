@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
+import PaymentComponent from './pay';
+import RazorpayCheckout from './pay';
 
 interface CartProduct {
     product_id: number;
@@ -107,6 +109,30 @@ export default function Cart() {
             });
         }
     };
+
+
+    const handlePaymentSuccess = (data: {
+        paymentId: string;
+        orderId: string;
+        signature: string;
+      }) => {
+        console.log('Payment Successful:', data);
+        // Handle successful payment
+      };
+    
+      const handlePaymentFailure = (error: {
+        code: string;
+        description: string;
+        source: string;
+        step: string;
+        reason: string;
+        orderId: string;
+        paymentId: string;
+      }) => {
+        console.error('Payment Failed:', error);
+        // Handle payment failure
+      };
+    
 
     if (loading) {
         return (
@@ -212,9 +238,22 @@ export default function Cart() {
                                 <span>₹0.00</span>
                             </div>
                         </div>
-                        <Button className="w-full bg-pink-600/70 hover:bg-pink-700">
+                        {/* <Button className="w-full bg-pink-600/70 hover:bg-pink-700">
                             Proceed to Checkout
-                        </Button>
+                        </Button> */}
+                        <RazorpayCheckout
+                            keyId="rzp_test_TZWS6YJ21K4x2r"
+                            orderId="order_PjOoJrZi6NxGkS"
+                            businessName="Your Business Name"
+                            prefill={{
+                                name: "Customer Name",
+                                email: "customer@example.com",
+                                contact: "9000090000",
+                                address: "Customer Address"
+                            }}
+                            onSuccess={handlePaymentSuccess}
+                            onFailure={handlePaymentFailure}
+                        />
                     </Card>
                 </div>
             </div>
