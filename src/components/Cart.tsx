@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
-import PaymentComponent from './pay';
 import RazorpayCheckout from './pay';
 
 interface CartProduct {
@@ -17,6 +16,7 @@ interface CartProduct {
     primary_image_url: string;
     cart_item_id: number;
     variant_stock: number;
+    price: number; // Add price field
 }
 
 export default function Cart() {
@@ -69,10 +69,6 @@ export default function Cart() {
 
             if (error) throw error;
             fetchCartItems();
-
-            // toast({
-            //     description: "Cart updated successfully",
-            // });
         } catch (err) {
             toast({
                 variant: "destructive",
@@ -98,10 +94,6 @@ export default function Cart() {
 
             if (error) throw error;
             fetchCartItems();
-
-            // toast({
-            //     description: "Item removed from cart",
-            // });
         } catch (err) {
             toast({
                 variant: "destructive",
@@ -110,17 +102,38 @@ export default function Cart() {
         }
     };
 
+    const calculateTotal = () => {
+        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0)*100;
+    };
 
-    const handlePaymentSuccess = (data: {
+    const prepareLineItems = () => {
+        console.log(cartItems)
+        return cartItems.map((item) => ({
+            sku: item.product_id.toString(), // Use product_id as SKU
+            variant_id: item.variant_id.toString(), // Use variant_id as variant_id
+            price: item.price * 100, // Convert to paise
+            offer_price: item.price * 100, // Same as price (no discount)
+            tax_amount: 0, // Assuming no tax for now
+            quantity: item.quantity,
+            name: item.product_name,
+            description: `${item.variant_color} - ${item.variant_size}`,
+            image_url: new URL(item.primary_image_url).href, // Optional
+            notes: {}, // Optional
+        }));
+    };
+
+    const handleSuccess = (data: {
         paymentId: string;
         orderId: string;
         signature: string;
-      }) => {
+    }) => {
         console.log('Payment Successful:', data);
-        // Handle successful payment
-      };
-    
-      const handlePaymentFailure = (error: {
+        toast({
+            description: "Payment successful!",
+        });
+    };
+
+    const handleFailure = (error: {
         code: string;
         description: string;
         source: string;
@@ -128,11 +141,13 @@ export default function Cart() {
         reason: string;
         orderId: string;
         paymentId: string;
-      }) => {
+    }) => {
         console.error('Payment Failed:', error);
-        // Handle payment failure
-      };
-    
+        toast({
+            variant: "destructive",
+            description: "Payment failed. Please try again.",
+        });
+    };
 
     if (loading) {
         return (
@@ -182,6 +197,9 @@ export default function Cart() {
                                         <p>Color: {item.variant_color}</p>
                                         {item.variant_size && <p>Size: {item.variant_size}</p>}
                                     </div>
+                                    <div className="text-sm text-muted-foreground">
+                                        <p>₹ {item.price}</p>
+                                    </div>
 
                                     <div className="flex items-center gap-4">
                                         <div className="flex items-center gap-2 border rounded-md">
@@ -227,7 +245,7 @@ export default function Cart() {
                         <div className="space-y-2">
                             <div className="flex justify-between">
                                 <span>Subtotal</span>
-                                <span>₹0.00</span>
+                                <span>₹{(calculateTotal() / 100).toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span>Shipping</span>
@@ -235,24 +253,23 @@ export default function Cart() {
                             </div>
                             <div className="border-t pt-2 flex justify-between font-medium">
                                 <span>Total</span>
-                                <span>₹0.00</span>
+                                <span>₹{(calculateTotal() / 100).toFixed(2)}</span>
                             </div>
                         </div>
-                        {/* <Button className="w-full bg-pink-600/70 hover:bg-pink-700">
-                            Proceed to Checkout
-                        </Button> */}
                         <RazorpayCheckout
-                            keyId="rzp_test_TZWS6YJ21K4x2r"
-                            orderId="order_PjOoJrZi6NxGkS"
-                            businessName="Your Business Name"
+                            keyId="rzp_test_uIVo1z5BDDBq3H"
+                            amount={calculateTotal()} // Total amount in paise
+                            currency="INR"
+                            businessName="Variety Heaven"
                             prefill={{
-                                name: "Customer Name",
-                                email: "customer@example.com",
-                                contact: "9000090000",
-                                address: "Customer Address"
+                                name: 'John Doe',
+                                email: 'john.doe@example.com',
+                                contact: '9999999999',
+                                address: '123, Main Street, City',
                             }}
-                            onSuccess={handlePaymentSuccess}
-                            onFailure={handlePaymentFailure}
+                            lineItems={prepareLineItems()} // Pass line items
+                            onSuccess={handleSuccess}
+                            onFailure={handleFailure}
                         />
                     </Card>
                 </div>
