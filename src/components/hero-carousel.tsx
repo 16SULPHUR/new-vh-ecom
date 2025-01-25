@@ -154,7 +154,7 @@ const carouselItems: CarouselItem[] = [
         title: 'The WEDDING Wardrobe',
         subtitle: 'Bridesmaid Beauties',
         imageDesktop: '/HeroBanners/desktop/4.jpg',
-        imageMobile: '/HeroBanners/mobile/3.jpg',
+        imageMobile: '/HeroBanners/mobile/4.jpg',
         ctaText: 'SHOP NOW',
         ctaLink: '/wedding-collection',
     },
