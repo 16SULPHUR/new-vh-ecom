@@ -28,8 +28,9 @@ type ColorVariantImages = {
 type ColorVariant = {
     color: string;
     hex_code: string;
-    varient_id: number
-    varient_stock:number
+    varient_id: number;
+    varient_stock: number;
+    varient_size: string
 };
 
 type Product = {
@@ -39,12 +40,24 @@ type Product = {
     price: string;
     sku: string;
     fabric: string;
+    pattern: string;
     category_name: string;
     primary_image_url: string;
     color_variants: ColorVariant[];
     size_variants: string[];
     variant_images: ColorVariantImages[];
-    variant_id: number
+    variant_id: number;
+    wash_care_instruction: string;
+    dimensions: string;
+    tag: string;
+    shipping_duration: number;
+    net_quantity: number;
+};
+
+// Add helper function to deduplicate colors
+const getUniqueColors = (variants: ColorVariant[]): string[] => {
+    const uniqueColors = new Set(variants.map(variant => variant.color));
+    return Array.from(uniqueColors);
 };
 
 export default function ProductPage() {
@@ -58,9 +71,10 @@ export default function ProductPage() {
     const [selectedSize, setSelectedSize] = useState<string>('');
     const [quantity, setQuantity] = useState(1);
     const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
-    const [expandedAccordions, setExpandedAccordions] = useState<string[]>(['product-details']);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const { id } = useParams<{ id: string }>();
+    const [uniqueColors, setUniqueColors] = useState<string[]>([]);
+
 
     const [touchStart, setTouchStart] = useState(0);
     const [touchEnd, setTouchEnd] = useState(0);
@@ -72,6 +86,8 @@ export default function ProductPage() {
     const addOns = [
         { id: 'petticoat', name: 'Petticoat', price: 799.00 },
     ];
+
+
 
     useEffect(() => {
         setCurrentImageIndex(0);
@@ -151,6 +167,7 @@ export default function ProductPage() {
         setTouchEnd(0);
     };
 
+    // Update the initial product fetch to set default size
     useEffect(() => {
         const fetchProduct = async () => {
             try {
@@ -162,10 +179,30 @@ export default function ProductPage() {
                 if (data && isValidProduct(data)) {
                     setProduct(data);
                     setMainImage(data.primary_image_url);
-                    if (data.color_variants.length > 0) {
-                        setSelectedColor(data.color_variants[0].color);
-                        setSelectedVarientId(data.color_variants[0].varient_id);
-                        setMaxQuantity(data.color_variants[0].varient_stock)
+
+                    // Get unique colors
+                    const colors = getUniqueColors(data.color_variants);
+                    setUniqueColors(colors);
+
+                    // Set default size if available
+                    if (data.size_variants && data.size_variants.length > 0) {
+                        setSelectedSize(data.size_variants[0]);
+                    }
+
+                    // Set default color and variant
+                    if (colors.length > 0) {
+                        const defaultColor = colors[0];
+                        setSelectedColor(defaultColor);
+
+                        // Find matching variant for default color
+                        const defaultVariant = data.color_variants.find(
+                            variant => variant.color === defaultColor
+                        );
+
+                        if (defaultVariant) {
+                            setSelectedVarientId(defaultVariant.varient_id);
+                            setMaxQuantity(defaultVariant.varient_stock);
+                        }
                     }
                 } else {
                     setError("Invalid product data");
@@ -180,6 +217,25 @@ export default function ProductPage() {
         fetchProduct();
     }, [id]);
 
+    // Add new effect to update selectedVariantId when color or size changes
+    useEffect(() => {
+        if (product && selectedColor && selectedSize) {
+            // Find the variant that matches both selected color and size
+            const matchingVariant = product.color_variants.find(
+                variant => {
+                    return (variant.color.toLowerCase() === selectedColor.toLowerCase()) && (
+                        variant.varient_size.toLowerCase() === selectedSize.toLowerCase()
+                    )
+                }
+            );
+
+            if (matchingVariant) {
+                setSelectedVarientId(matchingVariant.varient_id);
+                setMaxQuantity(matchingVariant.varient_stock);
+            }
+        }
+    }, [selectedColor, selectedSize, product]);
+
     const handleThumbnailClick = (imageUrl: string) => {
         setMainImage(imageUrl);  // Only update the main image
     };
@@ -193,16 +249,49 @@ export default function ProductPage() {
     };
 
     async function addItemsToCart() {
-        if (selectedVarientId) {
+        if (!selectedVarientId) {
+            toast({
+                title: "Please select options",
+                description: "Please select both color and size before adding to cart",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        if (product && product.size_variants[0] != "" && !selectedSize) {
+            console.log(product.size_variants)
+            toast({
+                title: "Please select size",
+                description: "Please select a size before adding to cart",
+                variant: "destructive"
+            });
+            return;
+        }
+
+        try {
             const cartDetails = await addToCart(selectedVarientId, quantity);
+
             if (cartDetails.success) {
                 toast({
                     title: "Product added to cart",
                     description: "Your Order is Eligible For Free Shipping",
                 });
+            } else {
+                toast({
+                    title: "Error",
+                    description: cartDetails.error || "Failed to add item to cart",
+                    variant: "destructive"
+                });
             }
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "An unexpected error occurred",
+                variant: "destructive"
+            });
         }
     }
+
 
     function isValidProduct(data: any): data is Product {
         return (
@@ -221,14 +310,6 @@ export default function ProductPage() {
         );
     }
 
-
-    const toggleAccordion = (id: string) => {
-        setExpandedAccordions(prev =>
-            prev.includes(id)
-                ? prev.filter(item => item !== id)
-                : [...prev, id]
-        );
-    };
 
     const getFilteredImages = () => {
         if (!product) return [];
@@ -365,7 +446,7 @@ export default function ProductPage() {
                 <div className="space-y-6 ms-2">
                     <div>
                         <h1 className="text-lg font-serif mb-2">{product.name}</h1>
-                        <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
+                        <p className="text-sm text-muted-foreground">SKU: {product.id}-{selectedVarientId}</p>
                     </div>
 
                     <div>
@@ -377,7 +458,7 @@ export default function ProductPage() {
                     </div>
 
                     <div className="space-y-4">
-                        {product.color_variants.length > 0 && (
+                        {uniqueColors.length > 0 && (
                             <div>
                                 <h3 className="font-medium mb-2">Color:</h3>
                                 <RadioGroup
@@ -385,29 +466,34 @@ export default function ProductPage() {
                                     onValueChange={setSelectedColor}
                                     className="flex flex-wrap gap-4"
                                 >
-                                    {product.color_variants.map((variant) => (
-                                        <div key={variant.color} className="flex flex-col items-center gap-2">
-                                            <RadioGroupItem
-                                                value={variant.color}
-                                                id={variant.color}
-                                                className="peer sr-only"
-                                            />
-                                            <Label
-                                                htmlFor={variant.color}
-                                                className="cursor-pointer"
-                                            >
-                                                <div className="w-16 h-16 rounded-md overflow-hidden border-2 peer-checked:border-primary transition-colors">
-                                                    <img
-                                                        src={getPrimaryImageForColor(variant.color) || product.primary_image_url}
-                                                        alt={variant.color}
-                                                        className="w-full h-full object-cover"
-                                                        onClick={() => setMainImage(getPrimaryImageForColor(variant.color))}
-                                                    />
-                                                </div>
-                                            </Label>
-                                            <span className="text-sm">{variant.color}</span>
-                                        </div>
-                                    ))}
+                                    {uniqueColors.map((color) => {
+                                        const variant = product?.color_variants.find(v => v.color === color);
+                                        if (!variant) return null;
+
+                                        return (
+                                            <div key={color} className={`flex flex-col items-center  border ${selectedColor.toLowerCase() === color.toLowerCase() ? "border-black bg-black text-primary-foreground" : "border-gray-300"}`}>
+                                                <RadioGroupItem
+                                                    value={color}
+                                                    id={color}
+                                                    className="peer sr-only"
+                                                />
+                                                <Label
+                                                    htmlFor={color}
+                                                    className="cursor-pointer"
+                                                >
+                                                    <div className="w-16 h-full overflow-hidden peer-checked:border-primary transition-colors border-b border-primary-foreground">
+                                                        <img
+                                                            src={getPrimaryImageForColor(color) || product.primary_image_url}
+                                                            alt={color}
+                                                            className="w-full h-full object-cover"
+                                                            onClick={() => setMainImage(getPrimaryImageForColor(color))}
+                                                        />
+                                                    </div>
+                                                </Label>
+                                                <span className="text-sm">{color}</span>
+                                            </div>
+                                        );
+                                    })}
                                 </RadioGroup>
                             </div>
                         )}
@@ -418,18 +504,24 @@ export default function ProductPage() {
                                 <RadioGroup
                                     value={selectedSize}
                                     onValueChange={setSelectedSize}
-                                    className="grid grid-cols-5 gap-2"
+                                    className="grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 gap-2"
                                 >
                                     {product.size_variants.map((size) => (
                                         <div key={size} className="flex items-center">
                                             <RadioGroupItem
                                                 value={size}
                                                 id={`size-${size}`}
-                                                className="peer sr-only"
+                                                className="sr-only" // Hide the radio button
                                             />
                                             <Label
                                                 htmlFor={`size-${size}`}
-                                                className="w-full cursor-pointer text-center py-2 border rounded-md peer-checked:bg-primary peer-checked:text-white transition-colors"
+                                                className={`w-full cursor-pointer text-center py-2 border border-black rounded-md transition-colors duration-300 ${selectedSize === size
+                                                    ? "bg-primary text-white"
+                                                    : "bg-transparent"
+                                                    }`}
+                                                style={{
+                                                    transition: "background-color 0.3s ease-in-out",
+                                                }}
                                             >
                                                 {size}
                                             </Label>
@@ -439,6 +531,7 @@ export default function ProductPage() {
                                 <button className="text-sm text-primary mt-2">Size Chart</button>
                             </div>
                         )}
+
 
                         <div>
                             <h3 className="font-medium mb-2">Quantity:</h3>
@@ -465,7 +558,7 @@ export default function ProductPage() {
                             </div>
                         </div>
 
-                        <div>
+                        {/* <div>
                             <h3 className="font-medium mb-2">Add-ons:</h3>
                             <div className="space-y-2">
                                 {addOns.map((addon) => (
@@ -488,7 +581,7 @@ export default function ProductPage() {
                                     </div>
                                 ))}
                             </div>
-                        </div>
+                        </div> */}
                     </div>
 
 
@@ -500,7 +593,7 @@ export default function ProductPage() {
 
                     <div className="flex-col gap-3 flex items-start">
                         <div className="bg-blue-50 w-full px-4 py-2 rounded-lg text-blue-600 flex gap-3">
-                            <Clock4Icon /> <span>Ships in 2 business days.</span>
+                            <Clock4Icon /> {product.shipping_duration > 1 ? (<span>Ships in {product.shipping_duration} business days.</span>) : (<span>Ships Now</span>)}
                         </div>
                         <div className="bg-green-50 w-full px-4 py-2 rounded-lg text-green-600 flex gap-3">
                             <img src="/free-shipping.svg" width={30} alt="" /> <span>Free Delivery on all order within India.</span>
@@ -509,34 +602,66 @@ export default function ProductPage() {
 
                     <div className="space-y-2">
                         <div
-                            className="border rounded-lg cursor-pointer"
-                            onClick={() => toggleAccordion('product-details')}
+                            className="border rounded-lg"
                         >
                             <div className="p-4 flex justify-between items-center">
                                 <h3 className="font-medium">Product Details</h3>
-                                {expandedAccordions.includes('product-details') ? (
-                                    <ChevronUp className="h-5 w-5" />
-                                ) : (
-                                    <ChevronDown className="h-5 w-5" />
-                                )}
                             </div>
-                            {expandedAccordions.includes('product-details') && (
-                                <div className="px-4 pb-4">
-                                    <div className="space-y-4">
-                                        <p>{product.description}</p>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <span className="font-medium">Fabric:</span>
-                                                <p>{product.fabric}</p>
-                                            </div>
-                                            <div>
-                                                <span className="font-medium">Category:</span>
-                                                <p>{product.category_name}</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div className="px-4 pb-4">
+                                <div className="space-y-4">
+                                    <p>{product.description}</p>
+                                    <table className="w-full">
+                                        <tbody>
+                                            {/* Fabric */}
+                                            {product.sku && (
+                                                <tr className="border">
+                                                    <td className="px-2 py-2 font-bold border border-black">SKU</td>
+                                                    <td className="px-2 py-2 font-bold border border-black">{product.id}-{selectedVarientId}</td>
+                                                </tr>
+                                            )}
+
+                                            {product.fabric && (
+                                                <tr className="border">
+                                                    <td className="px-2 py-2 font-medium border border-black">Fabric</td>
+                                                    <td className="px-2 py-2 border border-black">{product.fabric}</td>
+                                                </tr>
+                                            )}
+
+                                            {/* Pattern */}
+                                            {product.pattern && (
+                                                <tr className="border">
+                                                    <td className="px-2 py-2 font-medium border border-black">Pattern</td>
+                                                    <td className="px-2 py-2 border border-black">{product.pattern}</td>
+                                                </tr>
+                                            )}
+
+                                            {/* Category */}
+                                            {product.category_name && (
+                                                <tr className="border">
+                                                    <td className="px-2 py-2 font-medium border border-black">Category</td>
+                                                    <td className="px-2 py-2 border border-black">{product.category_name}</td>
+                                                </tr>
+                                            )}
+
+                                            {/* Wash Care */}
+                                            {product.wash_care_instruction && (
+                                                <tr className="border">
+                                                    <td className="px-2 py-2 font-medium border border-black">Wash Care</td>
+                                                    <td className="px-2 py-2 border border-black">{product.wash_care_instruction}</td>
+                                                </tr>
+                                            )}
+
+                                            {/* Net Quantity */}
+                                            {product.net_quantity && (
+                                                <tr className="border">
+                                                    <td className="px-2 py-2 font-medium border border-black">Net Quantity</td>
+                                                    <td className="px-2 py-2 border border-black">{product.net_quantity}</td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
                                 </div>
-                            )}
+                            </div>
                         </div>
                     </div>
                 </div>

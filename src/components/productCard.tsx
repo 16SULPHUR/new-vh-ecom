@@ -36,7 +36,7 @@ export default function ProductCard({
 
   return (
     <Link to={`/product/${id}`}>
-      <Card className="w-full max-w-[45vw] sm:max-w-xs overflow-hidden rounded-none border-none shadow-none">
+      <Card className="w-full max-w-[45vw] overflow-hidden rounded-none border-none shadow-none">
         <div className="relative">
           {tag && (
             <Badge

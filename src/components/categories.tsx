@@ -23,28 +23,35 @@ export default function Categories() {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
 
+    
+
     getProductsFromCategory(category || "saree")
 
-    useEffect(() => {
-        async function fetchProducts() {
-            try {
-                const data: Product[] = await getProductsFromCategory(category || "saree");
-                setProducts(data);
-            } catch (error) {
-                console.error('Error fetching products:', error);
-            } finally {
-                setLoading(false);
-            }
+    async function fetchProducts() {
+        try {
+            const data: Product[] = await getProductsFromCategory(category || "saree");
+            setProducts(data);
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        } finally {
+            setLoading(false);
         }
+    }
+
+    useEffect(() => {
         fetchProducts();
     }, []);
+    
+    useEffect(() => {
+        fetchProducts();
+    }, [category]);
 
     if (loading) {
         return <div>Loading...</div>;
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="mx-auto py-8 lg:max-w-[80vw]">
             <div className="flex justify-between items-center mb-2">
                 <h1 className="text-2xl text-center w-full font-base font-sourceSans">{category}</h1>
             </div>

@@ -91,7 +91,7 @@ export function ProductCarousel() {
         )}
         onClick={scrollPrev}
       >
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronLeft className="h-8 w-8" />
         <span className="sr-only">Previous slide</span>
       </Button>
       <Button
@@ -103,7 +103,7 @@ export function ProductCarousel() {
         )}
         onClick={scrollNext}
       >
-        <ChevronRight className="h-4 w-4" />
+        <ChevronRight className="h-8 w-8" />
         <span className="sr-only">Next slide</span>
       </Button>
     </div>
