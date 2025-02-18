@@ -149,6 +149,15 @@ const carouselItems: CarouselItem[] = [
         ctaText: 'SHOP NOW',
         ctaLink: '/wedding-collection',
     },
+  {
+        id: 4,
+        title: 'The WEDDING Wardrobe',
+        subtitle: 'Bridesmaid Beauties',
+        imageDesktop: '/HeroBanners/desktop/4.jpg',
+        imageMobile: '/HeroBanners/mobile/4.jpg',
+        ctaText: 'SHOP NOW',
+        ctaLink: '/wedding-collection',
+    },
 ]
 
 export function HeroCarousel() {
