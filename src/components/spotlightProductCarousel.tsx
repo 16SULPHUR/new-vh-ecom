@@ -56,7 +56,7 @@ export function ProductCarousel() {
         pagination={{
           clickable: true,
         }}
-        onBeforeInit={(swiper) => {
+        onBeforeInit={(swiper:any) => {
           if (swiper.params.navigation && typeof swiper.params.navigation !== "boolean") {
             swiper.params.navigation.prevEl = navigationPrevRef.current
             swiper.params.navigation.nextEl = navigationNextRef.current
