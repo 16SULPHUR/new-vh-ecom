@@ -1,117 +1,114 @@
-'use client';
+"use client"
 
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import * as React from 'react';
-import useEmblaCarousel from 'embla-carousel-react';
-import { EmblaCarouselType } from 'embla-carousel'
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import * as React from "react"
+import { Swiper, SwiperSlide } from "swiper/react"
+import { Autoplay, Navigation } from "swiper/modules"
+import "swiper/css"
+import "swiper/css/navigation"
+import 'swiper/css/pagination';
 
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import ProductCard from '@/components/productCard';
-import { Product } from '@/lib/types/product';
-import { getProductsFromCollection } from '@/lib/fetchProducts';
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import ProductCard from "@/components/productCard"
+import type { Product } from "@/lib/types/product"
+import { getProductsFromCollection } from "@/lib/fetchProducts"
 
 export function ProductCarousel() {
-  const [emblaRef, emblaApi] = useEmblaCarousel({
-    align: 'start',
-    loop: true,
-    slidesToScroll: 1,
-  });
-
-  const [canScrollPrev, setCanScrollPrev] = React.useState(false);
-  const [canScrollNext, setCanScrollNext] = React.useState(false);
-
-  const scrollPrev = React.useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev();
-  }, [emblaApi]);
-
-  const scrollNext = React.useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext();
-  }, [emblaApi]);
-
-  const onSelect = React.useCallback((emblaApi: EmblaCarouselType) => {
-    setCanScrollPrev(emblaApi.canScrollPrev());
-    setCanScrollNext(emblaApi.canScrollNext());
-  }, []);
-
-  React.useEffect(() => {
-    if (!emblaApi) return;
-
-    onSelect(emblaApi);
-    emblaApi.on('select', onSelect);
-    emblaApi.on('reInit', onSelect);
-
-    return () => {
-      emblaApi.off('select', onSelect);
-      emblaApi.off('reInit', onSelect);
-    };
-  }, [emblaApi, onSelect]);
-
-  const [products, setProducts] = React.useState<Product[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [products, setProducts] = React.useState<Product[]>([])
+  const [loading, setLoading] = React.useState(true)
+  const navigationPrevRef = React.useRef<HTMLButtonElement>(null)
+  const navigationNextRef = React.useRef<HTMLButtonElement>(null)
 
   React.useEffect(() => {
     async function fetchProducts() {
       try {
-        const data: Product[] = await getProductsFromCollection("Spotlight");
-        setProducts(data);
+        const data: Product[] = await getProductsFromCollection("Spotlight")
+        setProducts(data)
       } catch (error) {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
-    fetchProducts();
-  }, []);
+    fetchProducts()
+  }, [])
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>
   }
 
   return (
-    <div className={cn('relative w-full')}>
-      <div ref={emblaRef} className="overflow-hidden w-full">
-        <div className="flex min-h-[400px] w-screen">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="flex-[0_0_40%] min-w-0 px-1 sm:flex-[0_0_33.333%] md:flex-[0_0_17%] lg:flex-[0_0_18%]"
-            >
-              <ProductCard {...product}/>
+    <div className={cn("relative w-full")}>
+      <Swiper
+        modules={[Autoplay, Navigation]}
+        spaceBetween={8}
+        slidesPerView={2.2}
+        loop={true}
+        navigation={{
+          prevEl: navigationPrevRef.current,
+          nextEl: navigationNextRef.current,
+        }}
+        autoplay={{
+          delay: 2500,
+          disableOnInteraction: false,
+        }}
+        pagination={{
+          clickable: true,
+        }}
+        onBeforeInit={(swiper) => {
+          if (swiper.params.navigation && typeof swiper.params.navigation !== "boolean") {
+            swiper.params.navigation.prevEl = navigationPrevRef.current
+            swiper.params.navigation.nextEl = navigationNextRef.current
+          }
+        }}
+        breakpoints={{
+          640: {
+            slidesPerView: 2.5,
+            spaceBetween: 12,
+          },
+          768: {
+            slidesPerView: 3.5,
+            spaceBetween: 16,
+          },
+          1024: {
+            slidesPerView: 5.5,
+            spaceBetween: 16,
+          },
+          1280: {
+            slidesPerView: 5.5,
+            spaceBetween: 16,
+          },
+        }}
+        className="w-full min-h-[400px]"
+      >
+        {products.map((product) => (
+          <SwiperSlide key={product.id}>
+            <div className="h-full">
+              <ProductCard {...product} />
             </div>
-          ))}
-        </div>
-      </div>
+          </SwiperSlide>
+        ))}
+      </Swiper>
       <Button
+        ref={navigationPrevRef}
         variant="outline"
         size="icon"
-        className={cn(
-          'absolute left-1 top-1/2 z-10 h-8 w-8 -translate-y-1/2 rounded-full',
-          !canScrollPrev && 'hidden'
-        )}
-        onClick={scrollPrev}
+        className="absolute left-1 top-1/2 z-10 h-8 w-8 -translate-y-1/2 rounded-full"
       >
         <ChevronLeft className="h-8 w-8" />
         <span className="sr-only">Previous slide</span>
       </Button>
       <Button
+        ref={navigationNextRef}
         variant="outline"
         size="icon"
-        className={cn(
-          'absolute right-1 top-1/2 z-10 h-8 w-8 -translate-y-1/2 rounded-full',
-          !canScrollNext && 'hidden'
-        )}
-        onClick={scrollNext}
+        className="absolute right-1 top-1/2 z-10 h-8 w-8 -translate-y-1/2 rounded-full"
       >
         <ChevronRight className="h-8 w-8" />
         <span className="sr-only">Next slide</span>
       </Button>
     </div>
-  );
+  )
 }
-
-
-
-
-
 

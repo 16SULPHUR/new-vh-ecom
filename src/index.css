@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom styles for Swiper */
+.swiper-slide {
+  height: auto !important;
+}
+
+
+
+
+
 @font-face {
   font-family: "Black Chancery";
   src: url("/BLKCHCRY.TTF") format("truetype");
