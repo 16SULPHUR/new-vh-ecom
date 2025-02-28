@@ -14,6 +14,7 @@ import { CaretLeftIcon } from '@radix-ui/react-icons';
 import { format, min, parseISO } from 'date-fns'
 import { addToCart } from '@/lib/bagManager';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from './ui/badge';
 
 type VariantImage = {
     url: string;
@@ -350,66 +351,70 @@ export default function ProductPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Left column - Image gallery */}
                 <div className="space-y-4">
-                    {/* <Card className="overflow-scroll sm:overflow-hidden md:ml-24 flex rounded-none h-[60vh] sm:h-[85vh]"> */}
-                    <Card className="overflow-hidden relative md:ml-24 flex rounded-none h-[60vh] sm:h-[85vh] shadow-none">
+                    {/* Large screen layout */}
+                    <div className="hidden md:block">
+                        <Card className="rounded-none shadow-none">
+                            <PhotoProvider key={selectedColor}>
+                                <div
+                                    className="w-full h-full grid grid-cols-2 gap-5 justify-stretch"
+                                    onTouchStart={handleTouchStart}
+                                    onTouchMove={handleTouchMove}
+                                    onTouchEnd={handleTouchEnd}
+                                    onMouseDown={handleMouseDown}
+                                    onMouseMove={handleMouseMove}
+                                    onMouseUp={handleMouseUp}
+                                    onMouseLeave={handleMouseUp}
+                                >
+                                    {filteredImages.map((image, index) => (
+                                        <PhotoView key={index} src={image.url}>
+                                            <div
+                                                className={`transition-opacity duration-300`}
+                                            >
+                                                <img
+                                                    src={image.url}
+                                                    alt={`${product.name} view ${index + 1}`}
+                                                    className="w-full h-full object-contain cursor-zoom-in"
+                                                />
+                                            </div>
+                                        </PhotoView>
+                                    ))}
+                                </div>
+                            </PhotoProvider>
+                        </Card>
+                    </div>
 
-                        {/* <PhotoProvider key={selectedColor}>
-                            {filteredImages.map((image, index) => (
-                                <PhotoView src={image.url || product.primary_image_url}>
-                                    <img
-                                        src={image.url || product.primary_image_url}
-                                        alt={product.name}
-                                        className="w-full aspect-square object-cover cursor-pointer cursor-zoom-in"
-                                    />
-                                </PhotoView>
-                            ))}
-                        </PhotoProvider> */}
-                        <PhotoProvider key={selectedColor}>
-                            <div
-                                className="relative w-full h-full"
-                                onTouchStart={handleTouchStart}
-                                onTouchMove={handleTouchMove}
-                                onTouchEnd={handleTouchEnd}
-                                onMouseDown={handleMouseDown}
-                                onMouseMove={handleMouseMove}
-                                onMouseUp={handleMouseUp}
-                                onMouseLeave={handleMouseUp}
-                            >
-                                {filteredImages.map((image, index) => (
-                                    <PhotoView key={index} src={image.url}>
-                                        <div
-                                            className={`absolute inset-0 transition-opacity duration-300 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                                                }`}
-                                        >
-                                            <img
-                                                src={image.url}
-                                                alt={`${product.name} view ${index + 1}`}
-                                                className="w-full h-full object-contain cursor-zoom-in"
-                                            />
-                                        </div>
-                                    </PhotoView>
-                                ))}
-                            </div>
-                        </PhotoProvider>
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="absolute left-4 top-1/2 -translate-y-1/2 bg-transparent h-full border-none shadow-none hover:bg-transparent z-10 hidden sm:flex"
-                            onClick={prevImage}
-                        >
-                            <ChevronLeft className="h-6 w-6" />
-                        </Button>
-
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            className="absolute right-4 top-1/2 -translate-y-1/2 bg-transparent h-full border-none shadow-none hover:bg-transparent z-10 hidden sm:flex"
-                            onClick={nextImage}
-                        >
-                            <ChevronRight className="h-6 w-6" />
-                        </Button>
-
-                    </Card>
+                    {/* Mobile screen layout */}
+                    <div className="block md:hidden">
+                        <Card className="overflow-hidden relative flex rounded-none h-[60vh] sm:h-[85vh] shadow-none">
+                            <PhotoProvider key={selectedColor}>
+                                <div
+                                    className="relative w-full h-full"
+                                    onTouchStart={handleTouchStart}
+                                    onTouchMove={handleTouchMove}
+                                    onTouchEnd={handleTouchEnd}
+                                    onMouseDown={handleMouseDown}
+                                    onMouseMove={handleMouseMove}
+                                    onMouseUp={handleMouseUp}
+                                    onMouseLeave={handleMouseUp}
+                                >
+                                    {filteredImages.map((image, index) => (
+                                        <PhotoView key={index} src={image.url}>
+                                            <div
+                                                className={`absolute inset-0 transition-opacity duration-300 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0 pointer-events-none'
+                                                    }`}
+                                            >
+                                                <img
+                                                    src={image.url}
+                                                    alt={`${product.name} view ${index + 1}`}
+                                                    className="w-full h-full object-contain cursor-zoom-in"
+                                                />
+                                            </div>
+                                        </PhotoView>
+                                    ))}
+                                </div>
+                            </PhotoProvider>
+                        </Card>
+                    </div>
 
                     <div className="absolute sm:hidden left-1/2 -translate-x-1/2 flex gap-2 z-10">
                         {filteredImages.map((_, index) => (
@@ -421,31 +426,13 @@ export default function ProductPage() {
                             />
                         ))}
                     </div>
-
-                    {/* <div className="relative md:absolute md:left-0 md:top-0 md:bottom-0 md:w-20">
-                        <div className="flex md:flex-col gap-2 overflow-auto md:h-full">
-                            {filteredImages.map((image, index) => (
-                                <button
-                                    key={`image-${index}`}
-                                    className="flex-shrink-0 w-20 h-20 border rounded-md overflow-hidden hover:border-primary transition-colors"
-                                    onClick={() => handleThumbnailClick(image.url)}
-                                >
-                                    <img
-                                        src={image.url}
-                                        alt={`${product.name} view ${index + 1}`}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </button>
-                            ))}
-                        </div>
-                    </div> */}
-
                 </div>
 
                 {/* Right column - Product details */}
                 <div className="space-y-6 ms-2">
                     <div>
-                        <h1 className="text-lg font-serif mb-2">{product.name}</h1>
+                        {product.tag && <Badge className='mb-2 bg-pink-600'>{product.tag}</Badge>}
+                        <h1 className="lg:text-4xl text-xl font-serif mb-2">{product.name}</h1>
                         <p className="text-sm text-muted-foreground">SKU: {product.id}-{selectedVarientId}</p>
                     </div>
 
