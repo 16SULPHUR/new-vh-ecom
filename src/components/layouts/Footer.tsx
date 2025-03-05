@@ -1,134 +1,189 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import {
+    Instagram,
+    Facebook,
+    Youtube,
+    Twitter,
+    ArrowUp,
+    Phone,
+    ExternalLink
+} from "lucide-react";
 
 const Footer = () => {
+    const [showScrollButton, setShowScrollButton] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 300) {
+                setShowScrollButton(true);
+            } else {
+                setShowScrollButton(false);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
+
+    const paymentMethods = [
+        { id: 1, name: "UPI", src: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/1200px-UPI-Logo-vector.svg.png" },
+        { id: 3, name: "Visa", src: "https://www.pngplay.com/wp-content/uploads/12/Visa-Card-Logo-No-Background.png" },
+        { id: 4, name: "RuPay", src: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/RuPay.svg/2560px-RuPay.svg.png" },
+        { id: 5, name: "Internet Banking", src: "https://casinon.in/wp-content/uploads/Netbanking.webp" },
+    ];
+
+    
+
     return (
-        <div>
-            <div className="footer grid p-6 bg-aliceblue-100">
-                
-                <div className="section-2 flex flex-col md:flex-row justify-evenly gap-4 p-6 md:p-12 bg-white border">
-                    <div className="block-s-1 flex flex-col space-y-4">
-                        <div className="tab-1 flex items-center space-x-4">
-                            <p className="text-2xl font-semibold">
-                                <img src="./logos/blk.svg" alt="LOGO" className="h-20" />
-                            </p>
-                        </div>
-                        <div className="tab-2 flex items-start space-x-2">
+        <footer className="w-full bg-[url('https://img.freepik.com/premium-vector/thai-pattern-supreme-blue-background_58796-63.jpg')] bg-cover bg-center bg-no-repeat relative text-gray-800">
+            <div className="absolute inset-0 bg-white bg-opacity-90"></div>
+
+            <div className="relative z-10 container mx-auto px-4 py-12 md:py-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {/* Logo and Social Media Section */}
+                    <div className="animate-fade-in">
+                        <div className="mt-[-50px]">
                             <img
-                                width="16"
-                                height="16"
-                                src="https://img.icons8.com/tiny-color/16/home.png"
-                                alt="home"
+                                src="https://varietyheaven.in/logos/blk.svg"
+                                alt="Variety Heaven Logo"
+                                className="h-40 object-contain"
                             />
-                            <p className="text-sm text-gray-400 font-semibold lg:w-72">
-                                FIRST FLOOR, FLAT NO-103, BUILD NO-B/3, SENTOSA ENCLAVE, NEAR SHANTIKUNJ GARDEN, DINDOLI, SURAT, GUJARAT, PIN: 394210
-                            </p>
-                        </div>
-                        <div className="tab-3 flex items-center space-x-2">
-                            <img
-                                width="16"
-                                height="16"
-                                src="https://img.icons8.com/ultraviolet/40/phone.png"
-                                alt="phone"
-                            />
-                            <p className="text-sm text-gray-400 font-semibold">
-                                +91 81601 85875
-                            </p>
-                        </div>
-                        <div className="tab-4 flex items-center space-x-2">
-                            <img
-                                width="16"
-                                height="16"
-                                src="https://img.icons8.com/offices/30/new-post.png"
-                                alt="new-post"
-                            />
-                            <p className="text-sm text-gray-400 font-semibold">
-                                supatil1975@gmail.com
-                            </p>
-                        </div>
-                    </div>
-                    <div className="block-s-2 flex flex-col space-y-4">
-                        <div className="tab-1 flex items-center space-x-4">
-                            <p className="text-2xl font-semibold">Support</p>
-                        </div>
-                        <div className="tab-2 flex items-center space-x-2">
-                            <p className="text-sm text-gray-400 font-semibold">
-                                <Link to={"/contact"}>Contact Us</Link>
-                            </p>
-                        </div>
-                        <div className="tab-2 flex items-center space-x-2">
-                            <p className="text-sm text-gray-400 font-semibold">
-                                <Link to={"policies"}>Policies</Link>
-                            </p>
-                        </div>
-                        {/* <div className="tab-3 flex items-center space-x-2">
-                            <p className="text-sm text-gray-400 font-semibold">
-                                <Link to={"/orders"}>Track Order</Link>
-                            </p>
-                        </div> */}
-                        <div className="tab-4 flex items-center space-x-2">
-                            <p className="text-sm text-gray-400 font-semibold">
-                                <Link to={"/faqs"}>FAQs</Link>
-                            </p>
-                        </div>
-                    </div>
-                    <div className="block-s-3 flex flex-col space-y-4">
-                        {/* <div className="tab-1 flex items-center space-x-4">
-              <p className="text-2xl font-semibold"><Link to={"policies"}>Policies</Link></p>
-            </div> */}
-                        <div>
-                            <h1 className="text-2xl font-semibold">Socials</h1>
-                            <div className="flex space-x-4">
-                                <a href="https://instagram.com/varietyheaven.in" target="_blank" rel="noopener noreferrer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48px" height="48px">
-                                        <radialGradient id="yOrnnhliCrdS2gy~4tD8ma" cx="19.38" cy="42.035" r="44.899" gradientUnits="userSpaceOnUse">
-                                            <stop offset="0" stopColor="#fd5"></stop>
-                                            <stop offset=".328" stopColor="#ff543f"></stop>
-                                            <stop offset=".348" stopColor="#fc5245"></stop>
-                                            <stop offset=".504" stopColor="#e64771"></stop>
-                                            <stop offset=".643" stopColor="#d53e91"></stop>
-                                            <stop offset=".761" stopColor="#cc39a4"></stop>
-                                            <stop offset=".841" stopColor="#c837ab"></stop>
-                                        </radialGradient>
-                                        <path fill="url(#yOrnnhliCrdS2gy~4tD8ma)" d="M34.017,41.99l-20,0.019c-4.4,0.004-8.003-3.592-8.008-7.992l-0.019-20 c-0.004-4.4,3.592-8.003,7.992-8.008l20-0.019c4.4-0.004,8.003,3.592,8.008,7.992l0.019,20 C42.014,38.383,38.417,41.986,34.017,41.99z"></path>
-                                        <radialGradient id="yOrnnhliCrdS2gy~4tD8mb" cx="11.786" cy="5.54" r="29.813" gradientTransform="matrix(1 0 0 .6663 0 1.849)" gradientUnits="userSpaceOnUse">
-                                            <stop offset="0" stopColor="#4168c9"></stop>
-                                            <stop offset=".999" stopColor="#4168c9" stopOpacity="0"></stop>
-                                        </radialGradient>
-                                        <path fill="url(#yOrnnhliCrdS2gy~4tD8mb)" d="M34.017,41.99l-20,0.019c-4.4,0.004-8.003-3.592-8.008-7.992l-0.019-20 c-0.004-4.4,3.592-8.003,7.992-8.008l20-0.019c4.4-0.004,8.003,3.592,8.008,7.992l0.019,20 C42.014,38.383,38.417,41.986,34.017,41.99z"></path>
-                                        <path fill="#fff" d="M24,31c-3.859,0-7-3.14-7-7s3.141-7,7-7s7,3.14,7,7S27.859,31,24,31z M24,19c-2.757,0-5,2.243-5,5 s2.243,5,5,5s5-2.243,5-5S26.757,19,24,19z"></path>
-                                        <circle cx="31.5" cy="16.5" r="1.5" fill="#fff"></circle>
-                                        <path fill="#fff" d="M30,37H18c-3.859,0-7-3.14-7-7V18c0-3.86,3.141-7,7-7h12c3.859,0,7,3.14,7,7v12 C37,33.86,33.859,37,30,37z M18,13c-2.757,0-5,2.243-5,5v12c0,2.757,2.243,5,5,5h12c2.757,0,5-2.243,5-5V18c0-2.757-2.243-5-5-5H18z"></path>
-                                    </svg>
-                                </a>
-                                <a href="https://wa.me/918160185875" target="_blank" rel="noopener noreferrer">
-                                    <svg viewBox="0 0 32 32" className="whatsapp-ico" width="32" height="32">
-                                        <path d="M19.11 17.205c-.372 0-1.088 1.39-1.518 1.39a.63.63 0 0 1-.315-.1c-.802-.402-1.504-.817-2.163-1.447-.545-.516-1.146-1.29-1.46-1.963a.426.426 0 0 1-.073-.215c0-.33.99-.945.99-1.49 0-.143-.73-2.09-.832-2.335-.143-.372-.214-.487-.6-.487-.187 0-.36-.043-.53-.043-.302 0-.53.115-.746.315-.688.645-1.032 1.318-1.06 2.264v.114c-.015.99.472 1.977 1.017 2.78 1.23 1.82 2.506 3.41 4.554 4.34.616.287 2.035.888 2.722.888.817 0 2.15-.515 2.478-1.318.13-.33.244-.73.244-1.088 0-.058 0-.144-.03-.215-.1-.172-2.434-1.39-2.678-1.39zm-2.908 7.593c-1.747 0-3.48-.53-4.942-1.49L7.793 24.41l1.132-3.337a8.955 8.955 0 0 1-1.72-5.272c0-4.955 4.04-8.995 8.997-8.995S25.2 10.845 25.2 15.8c0 4.958-4.04 8.998-8.998 8.998zm0-19.798c-5.96 0-10.8 4.842-10.8 10.8 0 1.964.53 3.898 1.546 5.574L5 27.176l5.974-1.92a10.807 10.807 0 0 0 16.03-9.455c0-5.958-4.842-10.8-10.802-10.8z" fillRule="evenodd"></path>
-                                    </svg>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="block-s-3 flex flex-col space-y-4">
-                        <div className="tab-1 flex items-center space-x-4">
-                            <p className="text-2xl font-semibold">Marketplaces</p>
-                        </div>
-                        <div className="flex flex-col ms-3">
-                            <div className="">
-                                <img className="h-7" src="https://images.crowdspring.com/blog/wp-content/uploads/2023/07/03162944/amazon-logo-1.png" alt="amazon" />
-                            </div>
-                            <div className="">
-                                <img className="h-16" src="https://logos-world.net/wp-content/uploads/2020/11/Flipkart-Logo.png" alt="flipkart" />
-                            </div>
-                            {/* <div className="">
-                                <img className="h-5" src="https://vectorseek.com/wp-content/uploads/2023/09/Limeroad-Logo-Vector.svg-.png" alt="flipkart" />
-                            </div> */}
                         </div>
 
+                        <div className="flex space-x-3 mb-6">
+                            <a href="#" className="social-icon border border-gray-300">
+                                <Instagram size={35} />
+                            </a>
+                            <a href="#" className="social-icon border border-gray-300">
+                                <img className="h-8" src="https://cdn-icons-png.flaticon.com/512/1384/1384023.png" alt="whatsapp" />
+                            </a>
+                        </div>
+
+                        <div className="flex items-center space-x-2 text-sm">
+                            <Phone size={16} />
+                            <span>Variety Heaven</span>
+                            <span className="ml-1">🌿</span>
+                        </div>
+                    </div>
+
+                    {/* Information Column */}
+                    <div className="animate-scroll-up" style={{ animationDelay: "0.1s" }}>
+                        <h3 className="footer-heading">Information</h3>
+                        <ul className="space-y-1 text-gray-600">
+                            <li><Link to="#" className="footer-link">About Us</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Marketplace Storefronts Column */}
+                    <div className="animate-scroll-up" style={{ animationDelay: "0.2s" }}>
+                        <h3 className="footer-heading">Our Storefronts</h3>
+                        <ul className="space-y-4 mt-2 text-gray-600">
+                            <li>
+                                <a
+                                    href="https://www.amazon.in/s?rh=n%3A1571271031%2Cp_4%3AVARIETY%2BHEAVEN"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                                >
+                                    <img
+                                        src="https://companieslogo.com/img/orig/AMZN-e9f942e4.png?t=1722944001"
+                                        alt="Amazon Store"
+                                        className="h-8 object-contain"
+                                    />
+                                    <span className="text-sm flex items-center">
+                                        Shop on Amazon <ExternalLink size={14} className="ml-1" />
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    href="https://www.flipkart.com/womens-sarees/variety-heaven~brand/pr?sid=clo,8on,zpd,9og&marketplace=FLIPKART&otracker=product_breadCrumbs_VARIETY+HEAVEN+Women%27s+Sarees"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+                                >
+                                    <img
+                                        src="https://seeklogo.com/images/F/flipkart-logo-3F33927DAA-seeklogo.com.png"
+                                        alt="Flipkart Store"
+                                        className="h-8 object-contain"
+                                    />
+                                    <span className="text-sm flex items-center">
+                                        Shop on Flipkart <ExternalLink size={14} className="ml-1" />
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Customer Service Column */}
+                    <div className="animate-scroll-up" style={{ animationDelay: "0.3s" }}>
+                        <h3 className="footer-heading">Customer Service</h3>
+                        <ul className="space-y-1 text-gray-600">
+                            <li><Link to="/contact" className="footer-link">Contact</Link></li>
+                            <li><Link to="/faqs" className="footer-link">FAQ</Link></li>
+                            <li><Link to="/policies" className="footer-link">Shipping Policy</Link></li>
+                            <li><Link to="/policies" className="footer-link">Exchange Refund/Return Policy</Link></li>
+                            <li><Link to="/policies" className="footer-link">Cancellation Policy</Link></li>
+                            <li><Link to="#" className="footer-link">Track Order</Link></li>
+                        </ul>
+                    </div>
+                </div>
+
+                {/* Payment Methods Section */}
+                <div className="mt-12 py-6 border-t border-gray-200">
+                    <h3 className="footer-heading text-center mb-6">Accepted Payment Methods</h3>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 max-w-xs mx-auto">
+                        {paymentMethods.map((method) => (
+                            <div key={method.id} className="bg-white p-2 rounded-lg shadow-sm flex items-center justify-center h-12">
+                                <img
+                                    src={method.src}
+                                    alt={method.name}
+                                    className="h-full object-contain max-w-full"
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="flex justify-center items-center mt-6">
+                        <span className="text-sm text-gray-600 mr-2">Payments powered by</span>
+                        <img
+                            src="https://upload.wikimedia.org/wikipedia/commons/7/77/Razorpay_logo.png"
+                            alt="Razorpay"
+                            className="h-6 object-contain"
+                        />
+                    </div>
+                </div>
+
+                {/* Copyright Section */}
+                <div className="mt-8 pt-8 border-t border-gray-200 text-sm text-gray-600 flex flex-col md:flex-row justify-between items-center">
+                    <div>
+                        Copyright © 2025 Variety Heaven. All Right Reserved
+                        <span className="mx-2">|</span>
+                        <Link to="/policies" className="hover:text-black">Terms of service</Link>
+                        <span className="mx-2">|</span>
+                        <Link to="/policies" className="hover:text-black">Privacy Policy</Link>
                     </div>
                 </div>
             </div>
-        </div>
+
+            {/* Scroll to Top Button */}
+            <button
+                onClick={scrollToTop}
+                className={`scroll-to-top ${showScrollButton ? 'visible' : ''}`}
+                aria-label="Scroll to top"
+            >
+                <ArrowUp size={20} />
+            </button>
+        </footer>
     );
 };
 
