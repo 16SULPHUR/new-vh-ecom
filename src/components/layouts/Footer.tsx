@@ -40,11 +40,11 @@ const Footer = () => {
         { id: 5, name: "Internet Banking", src: "https://casinon.in/wp-content/uploads/Netbanking.webp" },
     ];
 
-    
+
 
     return (
-        <footer className="w-full bg-[url('https://img.freepik.com/premium-vector/thai-pattern-supreme-blue-background_58796-63.jpg')] bg-cover bg-center bg-no-repeat relative text-gray-800">
-            <div className="absolute inset-0 bg-white bg-opacity-90"></div>
+        <footer className="w-full bg-cover bg-center bg-no-repeat relative text-gray-800">
+            <div className="absolute inset-0 bg-opacity-90"></div>
 
             <div className="relative z-10 container mx-auto px-4 py-12 md:py-16">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -120,6 +120,30 @@ const Footer = () => {
                                     </span>
                                 </a>
                             </li>
+                            <li className="opacity-60">
+                                <div className="flex items-center gap-2">
+                                    <img
+                                        src="https://aartisto.com/wp-content/uploads/2020/11/myntra.png "
+                                        alt="Myntra Store"
+                                        className="h-8 object-contain"
+                                    />
+                                    <span className="text-sm flex items-center">
+                                        Myntra Store <span className="ml-2 text-xs text-gray-500">(Coming Soon)</span>
+                                    </span>
+                                </div>
+                            </li>
+                            <li className="opacity-60">
+                                <div className="flex items-center gap-2">
+                                    <img
+                                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxqxtMBrth5AMWiGWjrWlLqkzh80Td8iCKSg&s"
+                                        alt="Ajio Store"
+                                        className="h-8 object-contain"
+                                    />
+                                    <span className="text-sm flex items-center">
+                                        Ajio Store <span className="ml-2 text-xs text-gray-500">(Coming Soon)</span>
+                                    </span>
+                                </div>
+                            </li>
                         </ul>
                     </div>
 
@@ -174,15 +198,6 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Scroll to Top Button */}
-            <button
-                onClick={scrollToTop}
-                className={`scroll-to-top ${showScrollButton ? 'visible' : ''}`}
-                aria-label="Scroll to top"
-            >
-                <ArrowUp size={20} />
-            </button>
         </footer>
     );
 };

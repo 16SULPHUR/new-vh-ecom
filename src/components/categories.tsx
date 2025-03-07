@@ -55,18 +55,19 @@ export default function Categories() {
             <div className="flex justify-between items-center mb-2">
                 <h1 className="text-2xl text-center w-full font-base font-sourceSans">{category}</h1>
             </div>
-            <div className='md:flex hidden mb-2 w-full justify-end'>
+            <div className='flex mb-2 w-full justify-end'>
                 <div className='justify-end'>
                     <SortByButton />
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-8"> */}
+            <div className="">
                 {/* Filters Sidebar */}
-                <FilterSidebar />
+                {/* <FilterSidebar /> */}
 
                 {/* Products Grid */}
-                <div className="col-span-3 grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="col-span-3 grid grid-cols-2 md:grid-cols-4 lg:gap-6 gap-2">
                     {products.map((product) => (
                         <div
                             key={product.id}

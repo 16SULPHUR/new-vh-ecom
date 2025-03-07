@@ -71,7 +71,7 @@ export function Header() {
                                     className="text-lg font-medium transition-colors hover:text-primary flex w-full justify-between items-center"
                                     onClick={handleMenuItemClick}
                                 >
-                                    {item.title}
+                                    {toTitleCase(item.title)}
                                     <ArrowRight size={20}/>
                                 </Link>
                             ))}

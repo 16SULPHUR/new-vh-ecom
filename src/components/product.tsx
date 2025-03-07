@@ -400,8 +400,12 @@ export default function ProductPage() {
                                     {filteredImages.map((image, index) => (
                                         <PhotoView key={index} src={image.url}>
                                             <div
-                                                className={`absolute inset-0 transition-opacity duration-300 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0 pointer-events-none'
-                                                    }`}
+                                                className={`absolute inset-0 transition-all duration-300`}
+                                                style={{
+                                                    transform: `translateX(${index === currentImageIndex ? 0 : index < currentImageIndex ? '-100%' : '100%'}`,
+                                                    opacity: index === currentImageIndex ? 1 : 0,
+                                                    pointerEvents: index === currentImageIndex ? 'auto' : 'none'
+                                                }}
                                             >
                                                 <img
                                                     src={image.url}

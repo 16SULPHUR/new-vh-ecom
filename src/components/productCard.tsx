@@ -48,7 +48,7 @@ export default function ProductCard({
           <img
             src={imageUrl}
             alt={title}
-            className="h-[25vh] sm:h-[45vh] w-full object-cover"
+            className="h-[30vh] sm:h-[55vh] w-full object-cover"
             loading='lazy'
           />
         </div>
